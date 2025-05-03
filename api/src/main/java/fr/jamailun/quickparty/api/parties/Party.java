@@ -16,10 +16,10 @@ public interface Party {
     Collection<PartyMember> getMembers();
 
     @NotNull @UnmodifiableView
-    Collection<OfflinePlayer> getPendingInvitedPlayers();
+    Collection<PartyInvitation> getPendingInvitations();
 
     default int getSize() {
-        return getMembers().size() + getPendingInvitedPlayers().size();
+        return getMembers().size() + getPendingInvitations().size();
     }
 
     @Nullable PartyMember getPartyMember(@NotNull UUID uuid);

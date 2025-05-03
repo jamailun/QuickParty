@@ -1,5 +1,6 @@
 package fr.jamailun.quickparty.api.parties;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,5 +21,8 @@ public interface PartiesManager {
     @Nullable Party getPlayerParty(@NotNull UUID playerUuid);
 
     @NotNull PartyInvitationResult invitePlayer(@NotNull Player playerFrom, @NotNull Player playerTo);
+
+    boolean hasInvitation(@NotNull OfflinePlayer player);
+    @Nullable PartyInvitation getInvitationFor(@NotNull OfflinePlayer player);
 
 }

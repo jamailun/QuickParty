@@ -5,6 +5,7 @@ import fr.jamailun.quickparty.api.events.PartyInviteEvent;
 import fr.jamailun.quickparty.api.events.PartyLeftEvent;
 import fr.jamailun.quickparty.api.events.PartyPromoteEvent;
 import fr.jamailun.quickparty.api.parties.Party;
+import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyMember;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -16,8 +17,6 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class PartyImpl implements Party {
 
@@ -25,20 +24,18 @@ public class PartyImpl implements Party {
     private final SequencedMap<UUID, PartyMemberImpl> members = new LinkedHashMap<>();
     @Getter private PartyMemberImpl leader;
 
-    private final Map<UUID, OfflinePlayer> pendingInvitations = new HashMap<>();
+    private final Map<UUID, PartyInvitation> pendingInvitations = new HashMap<>();
 
-    private final Consumer<UUID> playerQuit;
-    private final Consumer<UUID> playerJoined;
+    private final PartiesManagerImpl manager;
 
-    public PartyImpl(@NotNull Player leaderPlayer, Consumer<UUID> playerQuit, BiConsumer<UUID, Party> playerJoined) {
+    public PartyImpl(@NotNull Player leaderPlayer, @NotNull PartiesManagerImpl manager) {
         // Init leader
         leader = new PartyMemberImpl(this, leaderPlayer);
         leader.setPartyLeader(true);
         members.put(leaderPlayer.getUniqueId(), leader);
 
         // Callbacks
-        this.playerQuit = playerQuit;
-        this.playerJoined = uuid -> playerJoined.accept(uuid, this);
+        this.manager = manager;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class PartyImpl implements Party {
     }
 
     @Override
-    public @NotNull @UnmodifiableView Collection<OfflinePlayer> getPendingInvitedPlayers() {
+    public @NotNull @UnmodifiableView Collection<PartyInvitation> getPendingInvitations() {
         return Collections.unmodifiableCollection(pendingInvitations.values());
     }
 
@@ -64,24 +61,28 @@ public class PartyImpl implements Party {
     @Override
     public void invite(@NotNull Player player) {
         OfflinePlayer offline = Bukkit.getOfflinePlayer(player.getUniqueId());
-        pendingInvitations.put(offline.getUniqueId(), offline);
+        PartyInvitation invitation =  new PartyInvitationImpl(this, player);
+        pendingInvitations.put(offline.getUniqueId(), invitation);
 
+        manager.invitations.put(player.getUniqueId(), invitation);
         Bukkit.getPluginManager().callEvent(new PartyInviteEvent(this, player));
     }
 
     @Override
     public void cancelInvitation(@NotNull UUID uuid) {
         pendingInvitations.remove(uuid);
+        manager.invitations.remove(uuid);
     }
 
     @Override
     public void join(@NotNull Player player) {
         UUID uuid = player.getUniqueId();
         pendingInvitations.remove(uuid);
+        manager.invitations.remove(uuid);
         PartyMemberImpl member = new PartyMemberImpl(this, player);
         members.put(uuid, member);
 
-        playerJoined.accept(uuid);
+        manager.playerJoined(uuid, this);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class PartyImpl implements Party {
         if(removed != null) {
             Bukkit.getPluginManager().callEvent(new PartyLeftEvent(this, removed.getOfflinePlayer(), kicked));
         }
-        playerQuit.accept(uuid);
+        manager.playerQuit(uuid);
     }
 
     @Override

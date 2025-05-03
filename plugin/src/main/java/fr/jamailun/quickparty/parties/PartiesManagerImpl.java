@@ -1,12 +1,10 @@
 package fr.jamailun.quickparty.parties;
 
 import fr.jamailun.quickparty.api.events.PartyJoinEvent;
-import fr.jamailun.quickparty.api.parties.PartiesManager;
-import fr.jamailun.quickparty.api.parties.Party;
-import fr.jamailun.quickparty.api.parties.PartyInvitationResult;
-import fr.jamailun.quickparty.api.parties.PartyInvitationState;
+import fr.jamailun.quickparty.api.parties.*;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,9 +15,11 @@ import java.util.*;
 public class PartiesManagerImpl implements PartiesManager {
 
     private final Set<Party> parties = new HashSet<>();
-    // Reverse access : speed !
-    // players -> party
+    // players -> party : Reverse access for speed !
     private final Map<UUID, Party> partiesAsMap = new HashMap<>();
+
+    // players -> party : invitation
+    final Map<UUID, PartyInvitation> invitations = new HashMap<>();
 
     @Override
     public @NotNull @UnmodifiableView Collection<Party> getParties() {
@@ -42,7 +42,7 @@ public class PartiesManagerImpl implements PartiesManager {
             return PartyInvitationState.INVITATION_SUCCESS.asSuccess(party);
         }
 
-        Party newParty = new PartyImpl(playerFrom, this::playerQuit, this::playerJoined);
+        Party newParty = new PartyImpl(playerFrom, this);
         parties.add(newParty);
         partiesAsMap.put(playerFrom.getUniqueId(), newParty);
 
@@ -53,10 +53,21 @@ public class PartiesManagerImpl implements PartiesManager {
         return PartyInvitationState.PARTY_CREATED.asSuccess(newParty);
     }
 
-    private void playerQuit(@NotNull UUID uuid) {
+    @Override
+    public boolean hasInvitation(@NotNull OfflinePlayer player) {
+        return invitations.containsKey(player.getUniqueId());
+    }
+
+    @Override
+    public PartyInvitation getInvitationFor(@NotNull OfflinePlayer player) {
+        return invitations.get(player.getUniqueId());
+    }
+
+    void playerQuit(@NotNull UUID uuid) {
         partiesAsMap.remove(uuid);
     }
-    private void playerJoined(@NotNull UUID uuid, @NotNull Party party) {
+
+    void playerJoined(@NotNull UUID uuid, @NotNull Party party) {
         partiesAsMap.put(uuid, party);
     }
 }

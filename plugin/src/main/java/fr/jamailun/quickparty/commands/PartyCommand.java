@@ -2,6 +2,7 @@ package fr.jamailun.quickparty.commands;
 
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
+import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyInvitationResult;
 import fr.jamailun.quickparty.api.parties.PartyMember;
 import org.bukkit.Bukkit;
@@ -53,6 +54,22 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             };
         }
 
+        if("accept".equalsIgnoreCase(args[0])) {
+            PartyInvitation invitation = QuickParty.getPartiesManager().getInvitationFor(player);
+            if(invitation == null)
+                return error(player, "You don't have any pending invitation.");
+            invitation.getParty().join(player);
+            return success(player, "You have join the party.");
+        }
+
+        if("refuse".equalsIgnoreCase(args[0])) {
+            PartyInvitation invitation = QuickParty.getPartiesManager().getInvitationFor(player);
+            if(invitation == null)
+                return error(player, "You don't have any pending invitation.");
+            invitation.getParty().cancelInvitation(player.getUniqueId());
+            return info(player, "You denied the party invitation.");
+        }
+
         Party party = QuickParty.getPlayerParty(player);
         if(party == null) {
             return info(player, "You are not in a party.");
@@ -62,7 +79,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         if("info".equalsIgnoreCase(args[0])) {
             info(player, "Party created at &b" + DATE_FORMAT.format(party.getCreationDate()));
             var members = party.getMembers();
-            var invitations = party.getPendingInvitedPlayers();
+            var invitations = party.getPendingInvitations();
             info(player, "Party members (&b"+members.size()+") :");
             for(PartyMember m : members) {
                 String name = (m.isPartyLeader() ? "&6" : "&a") + m.getOfflinePlayer().getName();
@@ -72,8 +89,8 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
             if(!invitations.isEmpty()) {
                 info(player, "Party invitations (&b"+invitations.size()+") :");
-                for(OfflinePlayer invited : invitations) {
-                    info(player, "- &7" + invited.getName());
+                for(PartyInvitation invitation : invitations) {
+                    info(player, "- &7" + invitation.getInvitedPlayer().getName());
                 }
             }
             return true;

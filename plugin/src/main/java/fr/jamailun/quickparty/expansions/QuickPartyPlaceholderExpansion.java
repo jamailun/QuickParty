@@ -35,7 +35,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
             case "party_creation_date" -> DateTimeFormatter.ISO_DATE_TIME.format(party.getCreationDate());
             case "party_size" -> String.valueOf(party.getSize());
             case "party_size_members" -> String.valueOf(party.getMembers().size());
-            case "party_size_invitations" -> String.valueOf(party.getPendingInvitedPlayers().size());
+            case "party_size_invitations" -> String.valueOf(party.getPendingInvitations().size());
             default -> "";
         };
     }
