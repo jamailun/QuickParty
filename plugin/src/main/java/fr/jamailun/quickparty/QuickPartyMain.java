@@ -8,6 +8,7 @@ import fr.jamailun.quickparty.expansions.UssAlliesCheckExpansion;
 import fr.jamailun.quickparty.listeners.FriendlyFireActionListener;
 import fr.jamailun.quickparty.parties.PartiesManagerImpl;
 import fr.jamailun.quickparty.expansions.QuickPartyPlaceholderExpansion;
+import fr.jamailun.quickparty.utils.Metrics;
 import fr.jamailun.ultimatespellsystem.api.UltimateSpellSystem;
 import fr.jamailun.ultimatespellsystem.api.providers.AlliesProvider;
 import lombok.Getter;
@@ -70,6 +71,9 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
         } else {
             QuickPartyLogger.info("Ultimate Spell System not found. No expansion added.");
         }
+
+        // bStats
+        new Metrics(this, 25729);
     }
 
 }
