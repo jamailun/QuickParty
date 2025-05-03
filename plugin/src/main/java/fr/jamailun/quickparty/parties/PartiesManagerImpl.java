@@ -1,5 +1,6 @@
 package fr.jamailun.quickparty.parties;
 
+import fr.jamailun.quickparty.QuickPartyLogger;
 import fr.jamailun.quickparty.api.events.PartyJoinEvent;
 import fr.jamailun.quickparty.api.parties.*;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
@@ -69,5 +70,14 @@ public class PartiesManagerImpl implements PartiesManager {
 
     void playerJoined(@NotNull UUID uuid, @NotNull Party party) {
         partiesAsMap.put(uuid, party);
+    }
+
+    void removeParty(@NotNull Party party) {
+        parties.remove(party);
+        // Should not be possible
+        if(partiesAsMap.containsValue(party)) {
+            QuickPartyLogger.error("Party removed, but a player still has it : " + party);
+            partiesAsMap.values().removeIf(p -> Objects.equals(party, p));
+        }
     }
 }

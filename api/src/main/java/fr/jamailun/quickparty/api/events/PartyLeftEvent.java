@@ -15,7 +15,13 @@ public class PartyLeftEvent extends Event {
 
     private final Party party;
     private final OfflinePlayer player;
-    private final boolean kicked;
+    private final LeaveReason reason;
+
+    public enum LeaveReason {
+        NORMAL,
+        KICKED,
+        DISBANDED
+    }
 
     // -- boilerplate
 

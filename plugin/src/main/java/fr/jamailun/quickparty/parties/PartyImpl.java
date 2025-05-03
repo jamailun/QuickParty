@@ -3,6 +3,7 @@ package fr.jamailun.quickparty.parties;
 import fr.jamailun.quickparty.api.events.PartyDisbandEvent;
 import fr.jamailun.quickparty.api.events.PartyInviteEvent;
 import fr.jamailun.quickparty.api.events.PartyLeftEvent;
+import fr.jamailun.quickparty.api.events.PartyLeftEvent.LeaveReason;
 import fr.jamailun.quickparty.api.events.PartyPromoteEvent;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyInvitation;
@@ -87,7 +88,7 @@ public class PartyImpl implements Party {
 
     @Override
     public void leave(@NotNull UUID uuid) {
-        basicRemove(uuid, false);
+        basicRemove(uuid, LeaveReason.NORMAL);
 
         if(Objects.equals(leader.getUUID(), uuid)) {
             leader = null;
@@ -103,23 +104,27 @@ public class PartyImpl implements Party {
 
     @Override
     public void kick(@NotNull OfflinePlayer player) {
-        basicRemove(player.getUniqueId(), true);
+        basicRemove(player.getUniqueId(), LeaveReason.KICKED);
     }
 
-    private void basicRemove(UUID uuid, boolean kicked) {
+    private void basicRemove(UUID uuid, LeaveReason reason) {
         PartyMember removed = members.remove(uuid);
         if(removed != null) {
-            Bukkit.getPluginManager().callEvent(new PartyLeftEvent(this, removed.getOfflinePlayer(), kicked));
+            Bukkit.getPluginManager().callEvent(new PartyLeftEvent(this, removed.getOfflinePlayer(), reason));
         }
         manager.playerQuit(uuid);
     }
 
     @Override
     public void disband() {
-        //TODO disband...
-
-
+        // Event before the removal of members & invitations
         Bukkit.getPluginManager().callEvent(new PartyDisbandEvent(this));
+
+        // Remove all invitations and members
+        List.copyOf(pendingInvitations.keySet()).forEach(this::cancelInvitation);
+        List.copyOf(members.values()).forEach(p -> basicRemove(p.getUUID(), LeaveReason.DISBANDED));
+
+        manager.removeParty(this);
     }
 
     @Override
