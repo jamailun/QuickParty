@@ -1,0 +1,26 @@
+name: QuickParty
+version: '1.0.0-SNAPSHOT'
+main: fr.jamailun.quickparty.QuickPartyMain
+api-version: '1.20'
+prefix: QuP
+author: jamailun
+description: Quick Party system.
+softdepend: [ PlaceholderAPI, UltimateSpellSystem ]
+
+commands:
+  party:
+    aliases:
+      - p
+    description: All parties commands.
+    permission: quickparty.party
+
+permissions:
+  quickparty.*:
+    default: op
+    children:
+      - quickparty.party
+      - quickparty.admin
+  quickparty.party:
+    default: true
+  quickparty.admin:
+    default: op
