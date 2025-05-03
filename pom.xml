@@ -45,6 +45,12 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
+
+        <!-- USS -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -82,7 +88,7 @@
 
         <!-- Ultimate Spell System -->
         <dependency>
-            <groupId>fr.jamailun.paper</groupId>
+            <groupId>com.github.jamailun.UltimateSpellSystem</groupId>
             <artifactId>ultimate-spell-system-api</artifactId>
             <version>${uss.version}</version>
             <scope>provided</scope>
