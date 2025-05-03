@@ -1,4 +1,4 @@
-package fr.jamailun.quickparty.placeholder;
+package fr.jamailun.quickparty.expansions;
 
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
@@ -8,6 +8,8 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.time.format.DateTimeFormatter;
 
 @SuppressWarnings("UnstableApiUsage")
 @RequiredArgsConstructor
@@ -22,8 +24,18 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
             return "";
         }
 
+        Party party =  QuickParty.getPlayerParty(player);
+        if(param.equals("has_party"))
+            return bool(party != null);
+        if(party == null) return "";
+
         return switch (param) {
-            case "has_party" -> bool(partyOf(player) != null);
+            case "party_leader" -> party.getLeader().getOfflinePlayer().getName();
+            case "party_is_leader" -> bool(party.getLeader().getUUID().equals(player.getUniqueId()));
+            case "party_creation_date" -> DateTimeFormatter.ISO_DATE_TIME.format(party.getCreationDate());
+            case "party_size" -> String.valueOf(party.getSize());
+            case "party_size_members" -> String.valueOf(party.getMembers().size());
+            case "party_size_invitations" -> String.valueOf(party.getPendingInvitedPlayers().size());
             default -> "";
         };
     }
@@ -45,10 +57,6 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
     private @NotNull String bool(boolean condition) {
         return condition ? "true" : "false";
-    }
-
-    private @Nullable Party partyOf(@NotNull Player player) {
-        return QuickParty.getPlayerParty(player).orElse(null);
     }
 
 }
