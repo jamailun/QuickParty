@@ -82,9 +82,9 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             var invitations = party.getPendingInvitations();
             info(player, i18n("infos.members").replace("%size", ""+members.size()));
             for(PartyMember m : members) {
-                String color = m.isPartyLeader() ? i18n("infos.color.leader") : i18n("infos.color.member");
+                String color = m.isPartyLeader() ? i18n("infos.member.color.leader") : i18n("infos.member.color.member");
                 String name = (m.isPartyLeader() ? "&6" : "&a") + m.getOfflinePlayer().getName();
-                String self = m.getUUID().equals(player.getUniqueId()) ?  i18n("infos.color.self") : "";
+                String self = m.getUUID().equals(player.getUniqueId()) ?  i18n("infos.member.color.self") : "";
                 info(player,
                         i18n("infos.member.line")
                                 .replace("%player", name)
@@ -110,12 +110,12 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             if(!member.isPartyLeader())
                 return error(sender, i18n("only-leader.disband"));
             party.disband();
-            return success(player, i18n("disbanded"));
+            return true;
         }
 
         if("leave".equalsIgnoreCase(args[0])) {
             party.leave(player.getUniqueId());
-            return success(sender, i18n("leave"));
+            return true;
         }
 
         if(args.length < 2)
@@ -130,7 +130,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             if(Objects.equals(other.getUniqueId(), player.getUniqueId()))
                 return error(sender, i18n("promote-self"));
             party.promoteMember(other);
-            return success(sender, i18n("promote-success").replace("%leader", other.getName()));
+            return true;
         }
 
         if("kick".equalsIgnoreCase(args[0])) {
@@ -139,7 +139,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             if(Objects.equals(other.getUniqueId(), player.getUniqueId()))
                 return error(sender, i18n("kick-self"));
             party.kick(other);
-            return success(sender, i18n("kick-success").replace("%player", other.getName()));
+            return true;
         }
         return error(sender, i18n("unexpected").replace("%args", getFirstArgs(player).toString()));
     }

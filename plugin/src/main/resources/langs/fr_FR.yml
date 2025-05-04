@@ -40,6 +40,7 @@ players:
   promote-success: "Nouveau chef promu ç la tête du groupe: &6%leader&r."
   kick-self: "Le chef ne peut pas s'expulser lui-même. Essayez plutôt de dissoudre le groupe."
   kick-success: "Le joueur &c%player&r a été expulsé du groupe."
+  kick-info: "Tu as été expulsé du groupe."
   unknown: "Argument inconnu. Arguments attendus: %args."
 
 admin:

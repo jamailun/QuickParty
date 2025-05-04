@@ -40,6 +40,7 @@ players:
   promote-success: "Successfully promoted &6%leader&r as the new party leader."
   kick-self: "You want to kick yourself? Please, disband the party instead."
   kick-success: "Successfully kicked &c%player&r from the party."
+  kick-info: "You have been kicked from the party."
   unknown: "Unexpected argument. Expected one of %args."
 admin:
   reloaded: "Configuration reloaded."

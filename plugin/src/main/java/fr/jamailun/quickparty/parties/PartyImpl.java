@@ -110,12 +110,18 @@ public class PartyImpl implements Party {
     @Override
     public void kick(@NotNull OfflinePlayer player) {
         basicRemove(player.getUniqueId(), LeaveReason.KICKED);
+        sendMessage(i18n("kick-success").replace("%player", name(player)));
     }
 
     private void basicRemove(UUID uuid, LeaveReason reason) {
         PartyMember removed = members.remove(uuid);
         if(removed != null) {
             Bukkit.getPluginManager().callEvent(new PartyLeftEvent(this, removed.getOfflinePlayer(), reason));
+            switch (reason) {
+                case NORMAL -> removed.sendMessage(i18n( "leave"));
+                case KICKED -> removed.sendMessage(i18n( "kick-info"));
+                case DISBANDED -> removed.sendMessage(i18n( "disbanded"));
+            };
         }
         manager.playerQuit(uuid);
     }
@@ -144,5 +150,18 @@ public class PartyImpl implements Party {
 
         // Events
         Bukkit.getPluginManager().callEvent(new PartyPromoteEvent(this, oldLeader));
+        sendMessage(i18n("promote-success").replace("%leader", name(player)).replace("%old_leader", name(oldLeader.getOfflinePlayer())));
+    }
+
+    private void sendMessage(@NotNull String message) {
+        getMembers().forEach(m -> m.sendMessage(message));
+    }
+
+    private static @NotNull String i18n(@NotNull String key) {
+        return QuickPartyConfig.getI18n("players." + key);
+    }
+
+    private static @NotNull String name(@NotNull OfflinePlayer player) {
+        return Objects.requireNonNullElse(player.getName(), player.getUniqueId().toString());
     }
 }
