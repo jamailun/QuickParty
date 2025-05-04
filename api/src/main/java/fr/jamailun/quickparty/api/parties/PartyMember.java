@@ -20,4 +20,6 @@ public interface PartyMember {
 
     @NotNull Party getParty();
 
+    void sendMessage(@NotNull String message);
+
 }

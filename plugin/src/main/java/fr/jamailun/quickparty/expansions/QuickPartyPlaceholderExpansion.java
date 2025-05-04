@@ -20,7 +20,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
     private final PluginMeta meta;
 
-    private static final Pattern MEMBER_NUM_EXTRACTOR = Pattern.compile("party_(member|invitation)_([1-9][0-9]*)");
+    private static final Pattern MEMBER_NUM_EXTRACTOR = Pattern.compile("party_(member|invitation|invit|is_leader|color)_([1-9][0-9]*)");
 
     @Override
     public @Nullable String onPlaceholderRequest(@Nullable Player player, @NotNull String param) {
@@ -31,20 +31,30 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
         Party party =  QuickParty.getPlayerParty(player);
         if(param.equals("has_party"))
-            return bool(party != null);
-        if(party == null) return "";
+            return bool(party != null && party.hasMember(player.getUniqueId()));
+        if(party == null) return param.contains("size") ? "0" : "";
 
         // Party num ?
         Matcher partyNumExt = MEMBER_NUM_EXTRACTOR.matcher(param);
         if(partyNumExt.matches()) {
-            int index = Integer.parseInt(partyNumExt.group(2));
-            boolean member = "member".equals(partyNumExt.group(1));
-            if(member) {
-                if(index < party.getMembers().size())
-                    return List.copyOf(party.getMembers()).get(index).getOfflinePlayer().getName();
-            } else {
-                if(index < party.getPendingInvitations().size())
-                    return List.copyOf(party.getPendingInvitations()).get(index).getInvitedPlayer().getName();
+            int index = Integer.parseInt(partyNumExt.group(2)) - 1;
+            switch (partyNumExt.group(1)) {
+                case "member" -> {
+                    if(index < party.getMembers().size())
+                        return List.copyOf(party.getMembers()).get(index).getOfflinePlayer().getName();
+                }
+                case "is_leader" -> {
+                    if(index < party.getMembers().size())
+                        return bool(List.copyOf(party.getMembers()).get(index).isPartyLeader());
+                }
+                case "color" -> {
+                    if(index < party.getMembers().size())
+                        return List.copyOf(party.getMembers()).get(index).isPartyLeader() ? "&6" : "";
+                }
+                case "invitation", "invit" -> {
+                    if(index < party.getPendingInvitations().size())
+                        return List.copyOf(party.getPendingInvitations()).get(index).getInvitedPlayer().getName();
+                }
             }
             return "&cOutOfBound";
         }
@@ -56,7 +66,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
             case "party_size" -> String.valueOf(party.getSize());
             case "party_size_members" -> String.valueOf(party.getMembers().size());
             case "party_size_invitations" -> String.valueOf(party.getPendingInvitations().size());
-            default -> "";
+            default -> "null";
         };
     }
 

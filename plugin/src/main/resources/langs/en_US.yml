@@ -11,6 +11,13 @@ players:
     already-here: "This player is already in your party."
     success-create: "Invitation sent, party successfully created."
     success: "Invitation sent successfully."
+    message-alert: "&e%player_from has invited &b%player_to&r in the party."
+    join-alert: "&e%player joined the party."
+    message:
+      - "&e---------------------------------------"
+      - "&e%player&f have sent you a party invitation."
+      - "&7You can do &a/p accept&7 or &c/p refuse&7."
+      - "&e---------------------------------------"
   no-party: "You are not in a party."
   infos:
     intro: "Party created at &b%date"

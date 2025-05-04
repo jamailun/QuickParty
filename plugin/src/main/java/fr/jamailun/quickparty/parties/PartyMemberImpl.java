@@ -5,6 +5,7 @@ import fr.jamailun.quickparty.api.parties.PartyMember;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,12 @@ public class PartyMemberImpl implements PartyMember {
     @Override
     public @NotNull UUID getUUID() {
         return offlinePlayer.getUniqueId();
+    }
+
+    @Override
+    public void sendMessage(@NotNull String message) {
+        Optional.ofNullable(getOnlinePlayer())
+                .ifPresent(p -> p.sendMessage(ChatColor.translateAlternateColorCodes('&', message)));
     }
 
 }

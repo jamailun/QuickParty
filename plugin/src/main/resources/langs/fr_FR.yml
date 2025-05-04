@@ -11,6 +11,13 @@ players:
     already-here: "Ce joueur est déjà dans le groupe."
     success-create: "Invitation envoyée. Groupe créé."
     success: "Invitation envoyée."
+    message-alert: "&e%player_from a invité &b%player_to&r dans le groupe."
+    join-alert: "&e%player a rejoint le groupe."
+    message:
+      - "&e---------------------------------------"
+      - "&e%player&f vous envoyé une demande invitation de groupe."
+      - "&7Faites &a/p accept&7 ou &c/p refuse&7."
+      - "&e---------------------------------------"
   no-party: "Commande impossible : il faut être dans un groupe."
   infos:
     intro: "Groupe créé à &b%date"

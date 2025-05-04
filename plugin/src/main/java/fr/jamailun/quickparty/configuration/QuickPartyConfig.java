@@ -4,14 +4,19 @@ import de.exlll.configlib.YamlConfigurationProperties;
 import de.exlll.configlib.YamlConfigurationStore;
 import fr.jamailun.quickparty.QuickPartyLogger;
 import lombok.Getter;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +36,7 @@ public class QuickPartyConfig {
 
     // Translations
     private final Map<String, String> i18n = new HashMap<>();
+    private final List<String> messageI18n = new ArrayList<>();
 
     public QuickPartyConfig(@NotNull Plugin plugin) {
         dataFolder = plugin.getDataFolder();
@@ -48,6 +54,7 @@ public class QuickPartyConfig {
         // Clear
         datetimeFormat = null;
         i18n.clear();
+        messageI18n.clear();
 
         // Reload
         config = store.load(file.toPath());
@@ -62,7 +69,13 @@ public class QuickPartyConfig {
             return;
         }
         Configuration langConfig = YamlConfiguration.loadConfiguration(file);
-        langConfig.getKeys(true).forEach(key -> i18n.put(key, langConfig.getString(key)));
+        for(String key : langConfig.getKeys(true)) {
+            if("players.invitation.message".equalsIgnoreCase(key)) {
+                messageI18n.addAll(langConfig.getStringList(key));
+            } else {
+                i18n.put(key, langConfig.getString(key));
+            }
+        }
     }
 
     public static @NotNull String getI18n(@NotNull String key) {
@@ -91,6 +104,14 @@ public class QuickPartyConfig {
             }
         }
         return datetimeFormat;
+    }
+
+    @SuppressWarnings("deprecation")
+    public void sendMessageTo(@NotNull Player inviter, @NotNull CommandSender target) {
+        for(String line : messageI18n) {
+            String replaced = line.replace("%player", inviter.getName());
+            target.sendMessage(ChatColor.translateAlternateColorCodes('&', replaced));
+        }
     }
 
 }

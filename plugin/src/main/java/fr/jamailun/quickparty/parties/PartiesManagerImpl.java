@@ -6,6 +6,7 @@ import fr.jamailun.quickparty.api.parties.*;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +41,15 @@ public class PartiesManagerImpl implements PartiesManager {
                 return PartyInvitationState.PARTY_FULL.asError();
             }
             party.invite(playerTo);
+            //
+            QuickPartyConfig.getInstance().sendMessageTo(playerFrom, playerTo);
+            playerTo.playSound(playerTo, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.3f);
+            String message = QuickPartyConfig.getI18n("players.invitation.message-alert")
+                    .replace("%player_from", playerFrom.getName())
+                    .replace("%player_to", playerTo.getName());
+            party.getMembers().stream()
+                    .filter(p -> !p.getUUID().equals(playerFrom.getUniqueId()))
+                    .forEach(m -> m.sendMessage(message));
             return PartyInvitationState.INVITATION_SUCCESS.asSuccess(party);
         }
 
@@ -50,6 +60,10 @@ public class PartiesManagerImpl implements PartiesManager {
         // Event
         Bukkit.getPluginManager().callEvent(new PartyJoinEvent(newParty, playerFrom, true));
         newParty.invite(playerTo);
+
+        // Message
+        QuickPartyConfig.getInstance().sendMessageTo(playerFrom, playerTo);
+        playerTo.playSound(playerTo, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.3f);
 
         return PartyInvitationState.PARTY_CREATED.asSuccess(newParty);
     }

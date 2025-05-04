@@ -8,6 +8,7 @@ import fr.jamailun.quickparty.api.events.PartyPromoteEvent;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyMember;
+import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import lombok.Getter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -77,6 +78,10 @@ public class PartyImpl implements Party {
 
     @Override
     public void join(@NotNull Player player) {
+        String message = QuickPartyConfig.getI18n("players.invitation.join-alert")
+                .replace("%player", player.getName());
+        getMembers().forEach(m -> m.sendMessage(message));
+
         UUID uuid = player.getUniqueId();
         pendingInvitations.remove(uuid);
         manager.invitations.remove(uuid);
@@ -139,9 +144,5 @@ public class PartyImpl implements Party {
 
         // Events
         Bukkit.getPluginManager().callEvent(new PartyPromoteEvent(this, oldLeader));
-    }
-
-    public boolean isValid() {
-        return leader != null;
     }
 }
