@@ -127,7 +127,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         if("promote".equalsIgnoreCase(args[0])) {
             if(!member.isPartyLeader())
                 return error(sender, i18n("only-leader.promote"));
-            if(!Objects.equals(other.getUniqueId(), player.getUniqueId()))
+            if(Objects.equals(other.getUniqueId(), player.getUniqueId()))
                 return error(sender, i18n("promote-self"));
             party.promoteMember(other);
             return success(sender, i18n("promote-success").replace("%leader", other.getName()));
@@ -136,7 +136,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         if("kick".equalsIgnoreCase(args[0])) {
             if(!member.isPartyLeader())
                 return error(sender, i18n("only-leader.kick"));
-            if(!Objects.equals(other.getUniqueId(), player.getUniqueId()))
+            if(Objects.equals(other.getUniqueId(), player.getUniqueId()))
                 return error(sender, i18n("kick-self"));
             party.kick(other);
             return success(sender, i18n("kick-success").replace("%player", other.getName()));
