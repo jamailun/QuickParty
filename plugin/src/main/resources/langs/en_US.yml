@@ -1,0 +1,6 @@
+players:
+  cannot-damage: "§cYour are trying to attack your ally."
+
+admin:
+  reloaded: "Configuration reloaded."
+  unknown: "Unexpected argument. Expected one of %args."

@@ -1,0 +1,6 @@
+players:
+  cannot-damage: "§cTu es en train d'essayer d'attaquer ton allié."
+
+admin:
+  reloaded: "Configuration rechargée."
+  unknown: "Argument inconnu. Arguments autorisés: %args."

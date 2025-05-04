@@ -17,6 +17,9 @@ public class MainConfiguration {
     @Comment("If true, 'debug' log will be printed into the console.")
     @Getter private boolean debug = false;
 
+    @Comment("Language to use. The file must exist in the lang/ folder. You don't need to specify the file extension.")
+    @Getter private String lang = "en_US";
+
     @Comment("Default values of the parties.")
     private PartySettings parties = new PartySettings(true, 4);
 

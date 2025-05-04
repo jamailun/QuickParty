@@ -23,9 +23,9 @@ public class PartyAdminCommand extends CommandHelper implements CommandExecutor,
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull[] args) {
         if("reload".equalsIgnoreCase(args[0])) {
             QuickPartyConfig.getInstance().reload();
-            return success(sender, "Configuration reloaded.");
+            return success(sender, QuickPartyConfig.getI18n("admin.reloaded"));
         }
-        return error(sender, "Unexpected argument. Expected one of " + ARGS);
+        return error(sender, QuickPartyConfig.getI18n("admin.unexpected").replace("%args", ARGS.toString()));
     }
 
 

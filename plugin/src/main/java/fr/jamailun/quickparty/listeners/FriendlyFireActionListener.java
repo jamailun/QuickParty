@@ -34,7 +34,7 @@ public class FriendlyFireActionListener extends QpListener {
         Entity target = event.getEntity();
         if(shouldCancel(attacker, target)) {
             event.setCancelled(true);
-            attacker.sendMessage("§cVilain, c'est ton allié.");
+            attacker.sendMessage(QuickPartyConfig.getI18n("players.cannot-damage"));
         }
     }
 

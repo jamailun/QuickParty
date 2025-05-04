@@ -4,6 +4,9 @@ version: "1.0"
 # If true, 'debug' log will be printed into the console.
 debug: false
 
+# Language to use. The file must exist in the lang/ folder. You don't need to specify the file extension.
+lang: "en_US"
+
 # Default values of the parties.
 parties:
   # If the party members can deal damage between them.
