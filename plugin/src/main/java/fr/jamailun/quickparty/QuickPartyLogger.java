@@ -23,11 +23,10 @@ public class QuickPartyLogger {
     }
 
     private static @NotNull String prefix(@NotNull String color) {
-        return color + time() + "[MobInv]";
+        return  "&b[QPa] " + color + time() + " ";
     }
 
-    static void initialize(JavaPlugin plugin, String prefix) {
-        QuickPartyLogger.prefix = prefix;
+    static void initialize(@NotNull JavaPlugin plugin) {
         QuickPartyLogger.sender = plugin.getServer().getConsoleSender();
     }
 

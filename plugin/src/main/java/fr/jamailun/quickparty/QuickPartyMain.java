@@ -1,5 +1,6 @@
 package fr.jamailun.quickparty;
 
+import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.QuickPartyPlugin;
 import fr.jamailun.quickparty.api.parties.PartiesManager;
 import fr.jamailun.quickparty.commands.PartyCommand;
@@ -25,7 +26,8 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
 
     @Override
     public void onLoad() {
-        QuickPartyLogger.initialize(this, "&b[QP]&r ");
+        QuickParty.setPlugin(this);
+        QuickPartyLogger.initialize(this);
     }
 
     @Override

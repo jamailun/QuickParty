@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -18,7 +17,7 @@ public final class QuickParty {
 
     private static QuickPartyPlugin plugin;
 
-    public static void setService(QuickPartyPlugin plugin) {
+    public static void setPlugin(QuickPartyPlugin plugin) {
         Preconditions.checkState(QuickParty.plugin == null, "Cannot set the QuickParty plugin : has already been set.");
         QuickParty.plugin = plugin;
     }

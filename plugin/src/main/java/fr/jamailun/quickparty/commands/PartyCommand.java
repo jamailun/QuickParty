@@ -152,6 +152,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             String arg1 = args[1].toLowerCase();
             if("invite".equalsIgnoreCase(args[0])) {
                 return Bukkit.getOnlinePlayers().stream()
+                        .filter(p -> !Objects.equals(p.getUniqueId(), player.getUniqueId()))
                         .map(Player::getName)
                         .filter(n -> n.toLowerCase().contains(arg1))
                         .toList();
