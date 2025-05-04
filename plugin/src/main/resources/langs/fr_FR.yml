@@ -1,5 +1,39 @@
 players:
-  cannot-damage: "§cTu es en train d'essayer d'attaquer ton allié."
+  cannot-damage: "Tu es en train d'essayer d'attaquer ton allié."
+  need-to-be-player: "Seuls les joueurs peuvent faire cette commande."
+  missing-arg-player: "Argument manquant : il faut spécifier le joueur à inviter."
+  unknown-player: "Joueur inconnu: '&4%player&r'. Est-il connecté ?"
+  invitation:
+    none: "Aucune invitation en attente."
+    accepted: "Groupe rejoint avec succès."
+    refused: "Invitation refusée."
+    party-full: "Impossible d'inviter un autre joueur : groupe plein."
+    already-here: "Ce joueur est déjà dans le groupe."
+    success-create: "Invitation envoyée. Groupe créé."
+    success: "Invitation envoyée."
+  no-party: "Commande impossible : il faut être dans un groupe."
+  infos:
+    intro: "Groupe créé à &b%date"
+    members: "Membres du groupe (&b%size&r) :"
+    member:
+      line: "- %color%player %self"
+      color:
+        member: "&a"
+        leader: "&6"
+      self: "&b(toi)"
+    invitations: "Invitations de groupe (&b%size&r) :"
+    invitation-line: "- &7%player &8(%date)"
+  only-leader:
+    disband: "Seul le chef de groupe peut dissoudre ce dernier !"
+    kick: "Seul le chef de groupe peut expulser un membre"
+    promote: "Seul le chef de groupe peut promouvoir un membre !"
+  leave: "Groupe quitté"
+  disbanded: "Le groupe a été dissout."
+  promote-self: "Vous êtes déjà le chef du groupe."
+  promote-success: "Nouveau chef promu ç la tête du groupe: &6%leader&r."
+  kick-self: "Le chef ne peut pas s'expulser lui-même. Essayez plutôt de dissoudre le groupe."
+  kick-success: "Le joueur &c%player&r a été expulsé du groupe."
+  unknown: "Argument inconnu. Arguments attendus: %args."
 
 admin:
   reloaded: "Configuration rechargée."

@@ -34,62 +34,73 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String @NotNull[] args) {
         if(!(sender instanceof Player player))
-            return error(sender, "You need to be a player.");
+            return error(sender, i18n("need-to-be-player"));
 
         if("invite".equalsIgnoreCase(args[0])) {
             if(args.length < 2)
-                return error(sender, "Missing argument : you need to specify the player to invite.");
+                return error(sender, i18n("missing-arg-player"));
 
             Player other = Bukkit.getPlayer(args[1]);
             if(other == null)
-                return error(sender, "Unknown player '&4" + args[1] + "&r'. Is he online ?");
+                return error(sender, i18n("unknown-player").replace("%player", args[1]));
 
             PartyInvitationResult result = QuickParty.getPartiesManager().invitePlayer(player, other);
             return switch (result.state()) {
-                case PARTY_FULL -> error(player, "The party is already full.");
-                case PLAYER_ALREADY_IN_PARTY -> error(player, "This player is already in your party.");
-                case PARTY_CREATED -> success(player, "Invitation sent, party successfully created.");
-                case INVITATION_SUCCESS -> success(player, "Invitation sent.");
+                case PARTY_FULL -> error(player, i18n("invitation.party-full"));
+                case PLAYER_ALREADY_IN_PARTY -> error(player, i18n("invitation.already-here"));
+                case PARTY_CREATED -> success(player, i18n("invitation.success-create"));
+                case INVITATION_SUCCESS -> success(player, i18n("invitation.success"));
             };
         }
 
         if("accept".equalsIgnoreCase(args[0])) {
             PartyInvitation invitation = QuickParty.getPartiesManager().getInvitationFor(player);
             if(invitation == null)
-                return error(player, "You don't have any pending invitation.");
+                return error(player, i18n("invitation.none"));
             invitation.getParty().join(player);
-            return success(player, "You have join the party.");
+            return success(player, i18n("invitation.accepted"));
         }
 
         if("refuse".equalsIgnoreCase(args[0])) {
             PartyInvitation invitation = QuickParty.getPartiesManager().getInvitationFor(player);
             if(invitation == null)
-                return error(player, "You don't have any pending invitation.");
+                return error(player, i18n("invitation.none"));
             invitation.getParty().cancelInvitation(player.getUniqueId());
-            return info(player, "You denied the party invitation.");
+            return info(player, i18n("invitation.refused"));
         }
 
         Party party = QuickParty.getPlayerParty(player);
         if(party == null) {
-            return info(player, "You are not in a party.");
+            return info(player, i18n("no-party"));
         }
         PartyMember member = Objects.requireNonNull(party.getPartyMember(player.getUniqueId()), "Could not get role in party...");
 
         if("info".equalsIgnoreCase(args[0])) {
-            info(player, "Party created at &b" + QuickPartyConfig.getInstance().getDatetimeFormat().format(party.getCreationDate()));
+            String date = QuickPartyConfig.getInstance().getDatetimeFormat().format(party.getCreationDate());
+            info(player, i18n("infos.intro").replace("%date", date));
             var members = party.getMembers();
             var invitations = party.getPendingInvitations();
-            info(player, "Party members (&b"+members.size()+") :");
+            info(player, i18n("infos.members").replace("%size", ""+members.size()));
             for(PartyMember m : members) {
+                String color = m.isPartyLeader() ? i18n("infos.color.leader") : i18n("infos.color.member");
                 String name = (m.isPartyLeader() ? "&6" : "&a") + m.getOfflinePlayer().getName();
-                String self = m.getUUID().equals(player.getUniqueId()) ? " &b(you)" : "";
-                info(player, "- " + name + self);
+                String self = m.getUUID().equals(player.getUniqueId()) ?  i18n("infos.color.self") : "";
+                info(player,
+                        i18n("infos.member.line")
+                                .replace("%player", name)
+                                .replace("%color", color)
+                                .replace("%self", self)
+                );
             }
 
             if(!invitations.isEmpty()) {
-                info(player, "Party invitations (&b"+invitations.size()+") :");
+                info(player, i18n("infos.invitations").replace("%size", ""+invitations.size()));
                 for(PartyInvitation invitation : invitations) {
-                    info(player, "- &7" + invitation.getInvitedPlayer().getName());
+                    info(player,
+                            i18n("infos.invitation-line")
+                                .replace("%player", Objects.requireNonNullElseGet(invitation.getInvitedPlayer().getName(), () -> invitation.getInvitedPlayer().getUniqueId().toString()))
+                                .replace("%date", QuickPartyConfig.getInstance().getDatetimeFormat().format(invitation.getDate()))
+                    );
                 }
             }
             return true;
@@ -97,40 +108,40 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
         if("disband".equalsIgnoreCase(args[0])) {
             if(!member.isPartyLeader())
-                return error(sender, "Only the party leader can disband the party !");
+                return error(sender, i18n("only-leader.disband"));
             party.disband();
-            return success(player, "Party successfully disbanded.");
+            return success(player, i18n("disbanded"));
         }
 
         if("leave".equalsIgnoreCase(args[0])) {
             party.leave(player.getUniqueId());
-            return success(sender, "You left the party.");
+            return success(sender, i18n("leave"));
         }
 
         if(args.length < 2)
-            return error(sender, "Missing argument : you need to specify the player.");
+            return error(sender, i18n("missing-arg-player"));
         Player other = Bukkit.getPlayer(args[1]);
         if(other == null)
-            return error(sender, "Unknown player '&4" + args[1] + "&r'. Is he online ?");
+            return error(sender, i18n("unknown-player").replace("%player", args[1]));
 
         if("promote".equalsIgnoreCase(args[0])) {
             if(!member.isPartyLeader())
-                return error(sender, "Only the party leader can promote a member !");
+                return error(sender, i18n("only-leader.promote"));
             if(!Objects.equals(other.getUniqueId(), player.getUniqueId()))
-                return error(sender, "You want to promote yourself ?");
+                return error(sender, i18n("promote-self"));
             party.promoteMember(other);
-            return success(sender, "Successfully promoted &e" + other.getName() + "&r as the new party leader.");
+            return success(sender, i18n("promote-success").replace("%leader", other.getName()));
         }
 
         if("kick".equalsIgnoreCase(args[0])) {
             if(!member.isPartyLeader())
-                return error(sender, "Only the party leader can kick a member !");
+                return error(sender, i18n("only-leader.kick"));
             if(!Objects.equals(other.getUniqueId(), player.getUniqueId()))
-                return error(sender, "You want to kick yourself ? Please, disband the party instead.");
+                return error(sender, i18n("kick-self"));
             party.kick(other);
-            return success(sender, "Successfully promoted &e" + other.getName() + "&r as the new party leader.");
+            return success(sender, i18n("kick-success").replace("%player", other.getName()));
         }
-        return error(sender, "Unexpected argument. Expected one of " + getFirstArgs(player));
+        return error(sender, i18n("unexpected").replace("%args", getFirstArgs(player).toString()));
     }
 
     @Override

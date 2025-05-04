@@ -1,6 +1,39 @@
 players:
-  cannot-damage: "§cYour are trying to attack your ally."
-
+  cannot-damage: "Your are trying to attack your ally."
+  need-to-be-player: "You need to be a player to do this."
+  missing-arg-player: "Missing argument : you need to specify the player to invite."
+  unknown-player: "Unknown player '&4%player&r'. Is he online ?"
+  invitation:
+    none: "You don't have any pending invitation."
+    accepted: "You have join the party."
+    refused: "You denied the party invitation."
+    party-full: "Cannot invite another player: party is already full."
+    already-here: "This player is already in your party."
+    success-create: "Invitation sent, party successfully created."
+    success: "Invitation sent successfully."
+  no-party: "You are not in a party."
+  infos:
+    intro: "Party created at &b%date"
+    members: "Party members (&b%size&r) :"
+    member:
+      line: "- %color%player %self"
+      color:
+        member: "&a"
+        leader: "&6"
+      self: "&b(you)"
+    invitations: "Party invitations (&b%size&r) :"
+    invitation-line: "- &7%player &8(%date)"
+  only-leader:
+    disband: "Only the party leader can disband the party!"
+    kick: "Only the party leader can kick a member!"
+    promote: "Only the party leader can promote party member!"
+  leave: "You left the party."
+  disbanded: "Party successfully disbanded."
+  promote-self: "You want to promote yourself ?"
+  promote-success: "Successfully promoted &6%leader&r as the new party leader."
+  kick-self: "You want to kick yourself? Please, disband the party instead."
+  kick-success: "Successfully kicked &c%player&r from the party."
+  unknown: "Unexpected argument. Expected one of %args."
 admin:
   reloaded: "Configuration reloaded."
   unknown: "Unexpected argument. Expected one of %args."
