@@ -13,6 +13,9 @@ commands:
       - p
     description: All parties commands.
     permission: quickparty.party
+  party-admin:
+    description: Admin party commands.
+    permission: quickparty.admin
 
 permissions:
   quickparty.*:

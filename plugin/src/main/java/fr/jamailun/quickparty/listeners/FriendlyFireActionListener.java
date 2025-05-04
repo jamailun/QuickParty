@@ -4,28 +4,44 @@ import fr.jamailun.quickparty.QuickPartyMain;
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Cancel friendly fire, if needed
+ * Cancel friendly fire, if needed.
  */
 public class FriendlyFireActionListener extends QpListener {
     public FriendlyFireActionListener(@NotNull QuickPartyMain plugin) {
         super(plugin);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     void entityAttackEvent(@NotNull EntityDamageByEntityEvent event) {
-        if(!(event.getEntity() instanceof Player victim && event.getDamager() instanceof Player attacker))
+        if(event.getDamager() instanceof Projectile projectile) {
+            if(projectile.getShooter() instanceof Entity shooter) {
+                cancelIfNeeded(event, shooter);
+            }
             return;
+        }
 
-        Party party = QuickParty.getPlayerParty(attacker);
-        if(party == null || !party.hasMember(victim.getUniqueId())) return;
+        cancelIfNeeded(event, event.getDamager());
+    }
 
-        event.setCancelled(!QuickPartyConfig.getInstance().isFriendlyFireEnabled());
+    private void cancelIfNeeded(@NotNull EntityDamageByEntityEvent event, @NotNull Entity attacker) {
+        Entity target = event.getEntity();
+        if(shouldCancel(attacker, target)) {
+            event.setCancelled(true);
+            attacker.sendMessage("§cVilain, c'est ton allié.");
+        }
+    }
+
+    private boolean shouldCancel(@NotNull Entity attacker, @NotNull Entity target) {
+        Party party = QuickParty.getPlayerParty(attacker.getUniqueId());
+        if(party == null || !party.hasMember(target.getUniqueId())) return false;
+        return ! QuickPartyConfig.getInstance().isFriendlyFireEnabled();
     }
 
 }

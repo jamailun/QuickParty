@@ -2,7 +2,7 @@
 version: "1.0"
 
 # If true, 'debug' log will be printed into the console.
-debug: false;
+debug: false
 
 # Default values of the parties.
 parties:
@@ -10,3 +10,8 @@ parties:
   friendlyFire: true
   # Maximum size of parties.
   maxSize: 4
+
+# Formats configuration
+format:
+  # Output date format.
+  dateTime: "HH:mm:ss"

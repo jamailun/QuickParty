@@ -13,7 +13,6 @@ public class QuickPartyLogger {
 
     private final static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("[HH:mm:ss]");
 
-    private static String prefix;
     private static CommandSender sender;
 
     private QuickPartyLogger() {}
@@ -31,15 +30,15 @@ public class QuickPartyLogger {
     }
 
     public static void debug(@NotNull String message) {
-        send(prefix("&3") + "[Debug]" + prefix + "&7 " + message);
+        send(prefix("&3") + "[Debug]&7 " + message);
     }
 
     public static void info(@NotNull String message) {
-        send(prefix("&b") + "[Info]" + prefix + "&f " + message);
+        send(prefix("&b") + "[Info]&f " + message);
     }
 
     public static void warn(@NotNull String message) {
-        send(prefix("&6") + "[Warn]" + prefix + "&e " + message);
+        send(prefix("&6") + "[Warn]&e " + message);
     }
 
     public static void warn(@NotNull String message, @NotNull Throwable t) {
@@ -48,7 +47,7 @@ public class QuickPartyLogger {
     }
 
     public static void error(@NotNull String message) {
-        send(prefix("&4") + "[Error]" + prefix + "&c " + message);
+        send(prefix("&4") + "[Error]&c " + message);
     }
 
     public static void error(@NotNull String message, @NotNull Throwable t) {

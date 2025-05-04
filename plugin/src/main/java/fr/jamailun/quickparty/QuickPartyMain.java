@@ -3,6 +3,7 @@ package fr.jamailun.quickparty;
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.QuickPartyPlugin;
 import fr.jamailun.quickparty.api.parties.PartiesManager;
+import fr.jamailun.quickparty.commands.PartyAdminCommand;
 import fr.jamailun.quickparty.commands.PartyCommand;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import fr.jamailun.quickparty.expansions.UssAlliesCheckExpansion;
@@ -43,6 +44,7 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
 
         // Commands
         new PartyCommand();
+        new PartyAdminCommand();
 
         // Listeners
         new FriendlyFireActionListener(this);

@@ -5,6 +5,7 @@ import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyInvitationResult;
 import fr.jamailun.quickparty.api.parties.PartyMember;
+import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
@@ -12,18 +13,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class PartyCommand extends CommandHelper implements CommandExecutor, TabCompleter {
 
-    private static final List<String> ARGS_WITHOUT_PARTY = List.of("invite", "accept", "refuse");
+    private static final String[] ARGS_INVITED = new String[] {"accept", "refuse"};
+    private static final List<String> ARGS_WITHOUT_PARTY = List.of("invite");
     private static final List<String> ARGS_WITH_PARTY = listOf(ARGS_WITHOUT_PARTY, "info", "leave");
     private static final List<String> ARGS_PARTY_LEADER = listOf(ARGS_WITH_PARTY, "kick", "disband", "promote");
-
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     public PartyCommand() {
         PluginCommand cmd = Bukkit.getPluginCommand("party");
@@ -77,7 +76,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         PartyMember member = Objects.requireNonNull(party.getPartyMember(player.getUniqueId()), "Could not get role in party...");
 
         if("info".equalsIgnoreCase(args[0])) {
-            info(player, "Party created at &b" + DATE_FORMAT.format(party.getCreationDate()));
+            info(player, "Party created at &b" + QuickPartyConfig.getInstance().getDatetimeFormat().format(party.getCreationDate()));
             var members = party.getMembers();
             var invitations = party.getPendingInvitations();
             info(player, "Party members (&b"+members.size()+") :");
@@ -131,9 +130,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             party.kick(other);
             return success(sender, "Successfully promoted &e" + other.getName() + "&r as the new party leader.");
         }
-
-
-        return error(sender, "Not reachable.");
+        return error(sender, "Unexpected argument. Expected one of " + getFirstArgs(player));
     }
 
     @Override
@@ -174,10 +171,12 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
     }
 
     private List<String> getFirstArgs(Player player) {
+        String[] bonusInvited = QuickParty.getPartiesManager().hasInvitation(player) ? ARGS_INVITED : new String[0];
+
         Party party = QuickParty.getPlayerParty(player);
-        if(party == null) return ARGS_WITHOUT_PARTY;
+        if(party == null) return listOf(ARGS_WITHOUT_PARTY, bonusInvited);
         PartyMember member = party.getPartyMember(player.getUniqueId());
-        return (member != null && member.isPartyLeader()) ? ARGS_PARTY_LEADER : ARGS_WITH_PARTY ;
+        return listOf((member != null && member.isPartyLeader()) ? ARGS_PARTY_LEADER : ARGS_WITH_PARTY, bonusInvited);
     }
 
 }

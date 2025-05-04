@@ -2,6 +2,7 @@ package fr.jamailun.quickparty.expansions;
 
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
+import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -9,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -52,7 +52,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
         return switch (param) {
             case "party_leader" -> party.getLeader().getOfflinePlayer().getName();
             case "party_is_leader" -> bool(party.getLeader().getUUID().equals(player.getUniqueId()));
-            case "party_creation_date" -> DateTimeFormatter.ISO_DATE_TIME.format(party.getCreationDate());
+            case "party_creation_date" -> QuickPartyConfig.getInstance().getDatetimeFormat().format(party.getCreationDate());
             case "party_size" -> String.valueOf(party.getSize());
             case "party_size_members" -> String.valueOf(party.getMembers().size());
             case "party_size_invitations" -> String.valueOf(party.getPendingInvitations().size());
