@@ -1,5 +1,6 @@
 package fr.jamailun.quickparty;
 
+import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,7 +23,7 @@ public class QuickPartyLogger {
     }
 
     private static @NotNull String prefix(@NotNull String color) {
-        return  "&b[QPa] " + color + time() + " ";
+        return "&b[QPa]" + color + time() + " ";
     }
 
     static void initialize(@NotNull JavaPlugin plugin) {
@@ -30,7 +31,8 @@ public class QuickPartyLogger {
     }
 
     public static void debug(@NotNull String message) {
-        send(prefix("&3") + "[Debug]&7 " + message);
+        if(QuickPartyConfig.isDebug())
+           send(prefix("&3") + "[Debug]&7 " + message);
     }
 
     public static void info(@NotNull String message) {

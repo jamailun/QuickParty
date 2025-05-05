@@ -3,6 +3,7 @@ package fr.jamailun.quickparty.configuration;
 import de.exlll.configlib.YamlConfigurationProperties;
 import de.exlll.configlib.YamlConfigurationStore;
 import fr.jamailun.quickparty.QuickPartyLogger;
+import fr.jamailun.quickparty.utils.JarReader;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -13,11 +14,9 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Plugin configuration file read.
@@ -33,6 +32,8 @@ public class QuickPartyConfig {
 
     private static final DateTimeFormatter DEFAULT_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter datetimeFormat;
+
+    @Getter public static boolean isDebug = false;
 
     // Translations
     private final Map<String, String> i18n = new HashMap<>();
@@ -58,11 +59,25 @@ public class QuickPartyConfig {
 
         // Reload
         config = store.load(file.toPath());
+        isDebug = config.isDebug();
+
         reloadLang();
     }
 
     private void reloadLang() {
         String lang = config.getLang();
+        File langDir = new File(dataFolder, "lang");
+        if(!langDir.exists()) {
+            QuickPartyLogger.info("No lang/ directory. Will create it.");
+            if(!langDir.mkdirs()) {
+                QuickPartyLogger.error("Could not create lang/ directory.");
+                return;
+            }
+        }
+        // Extract lang files when langs/ dir is empty.
+        if(Objects.requireNonNull(langDir.listFiles()).length == 0) {
+            extractLangFiles(langDir);
+        }
         File file = new File(dataFolder, "lang/" + lang + ".yml");
         if(!file.exists()) {
             QuickPartyLogger.error("Translations file not found: " + file);
@@ -80,10 +95,6 @@ public class QuickPartyConfig {
 
     public static @NotNull String getI18n(@NotNull String key) {
         return getInstance().i18n.getOrDefault(key, "?" + key + "?");
-    }
-
-    public boolean isDebug() {
-        return config.isDebug();
     }
 
     public int getMaxPartySize() {
@@ -111,6 +122,27 @@ public class QuickPartyConfig {
         for(String line : messageI18n) {
             String replaced = line.replace("%player", inviter.getName());
             target.sendMessage(ChatColor.translateAlternateColorCodes('&', replaced));
+        }
+    }
+
+    private void extractLangFiles(@NotNull File outDir) {
+        try {
+            for(String file : JarReader.extractJarFiles("langs/")) {
+                if(!file.endsWith(".yml")) continue;
+
+                String fileName = file.substring(file.lastIndexOf('/') + 1);
+                File outFile = new File(outDir, fileName);
+                QuickPartyLogger.info("Extract lang-file to: '" + outFile + "'");
+                try(var inputStream = Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(file))) {
+                    java.nio.file.Files.copy(
+                        inputStream,
+                        outFile.toPath(),
+                        StandardCopyOption.REPLACE_EXISTING
+                    );
+                }
+            }
+        } catch(Exception e) {
+            QuickPartyLogger.error("Could not walk over internal lang files", e);
         }
     }
 
