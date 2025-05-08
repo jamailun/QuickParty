@@ -1,12 +1,11 @@
 package fr.jamailun.quickparty;
 
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
-import org.bukkit.ChatColor;
+import fr.jamailun.quickparty.utils.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
@@ -43,40 +42,17 @@ public class QuickPartyLogger {
         send(prefix("&6") + "[Warn]&e " + message);
     }
 
-    public static void warn(@NotNull String message, @NotNull Throwable t) {
-        warn(message);
-        send("&e" + formatError(t));
-    }
-
     public static void error(@NotNull String message) {
         send(prefix("&4") + "[Error]&c " + message);
     }
 
     public static void error(@NotNull String message, @NotNull Throwable t) {
         error(message);
-        send("&c" + formatError(t));
+        send("&c" + StringUtils.formatError(t));
     }
 
-    @SuppressWarnings("deprecation")
     private static void send(@NotNull String message) {
-        sender.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-    }
-
-    private static @NotNull String formatError(@NotNull Throwable t) {
-        StringBuilder sb = new StringBuilder();
-        t.printStackTrace(new PrintWriter(new Writer() {
-            @Override
-            public void write(char @NotNull [] buf, int off, int len) {
-                sb.append(String.copyValueOf(buf, off, len));
-            }
-            @Override
-            public void write(@NotNull String str) {
-                sb.append(str);
-            }
-            @Override public void flush() {}
-            @Override public void close() {}
-        }));
-        return sb.toString();
+        sender.sendMessage(StringUtils.parseString(message));
     }
 
 }

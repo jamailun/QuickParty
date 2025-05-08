@@ -4,8 +4,12 @@ import de.exlll.configlib.YamlConfigurationProperties;
 import de.exlll.configlib.YamlConfigurationStore;
 import fr.jamailun.quickparty.QuickPartyLogger;
 import fr.jamailun.quickparty.utils.JarReader;
+import fr.jamailun.quickparty.utils.StringUtils;
 import lombok.Getter;
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -93,6 +97,19 @@ public class QuickPartyConfig {
         }
     }
 
+    private static @NotNull Component prepareComplexMessage(@NotNull String raw) {
+        List<String> parts = StringUtils.splitWithDelimiters(raw, "%CMD_ACCEPT", "%CMD_REFUSE");
+        List<Component> components = new ArrayList<>();
+        for(String part : parts) {
+            components.add(switch (part) {
+                case "%CMD_ACCEPT" -> Component.text("/p accept", NamedTextColor.GREEN).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
+                case "%CMD_REFUSE" -> Component.text("/p refuse", NamedTextColor.RED).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse"));
+                default -> StringUtils.parseString(part);
+            });
+        }
+        return Component.join(JoinConfiguration.noSeparators(), components);
+    }
+
     public static @NotNull String getI18n(@NotNull String key) {
         return getInstance().i18n.getOrDefault(key, "?" + key + "?");
     }
@@ -117,11 +134,13 @@ public class QuickPartyConfig {
         return datetimeFormat;
     }
 
-    @SuppressWarnings("deprecation")
     public void sendMessageTo(@NotNull Player inviter, @NotNull CommandSender target) {
         for(String line : messageI18n) {
+            // Replace
             String replaced = line.replace("%player", inviter.getName());
-            target.sendMessage(ChatColor.translateAlternateColorCodes('&', replaced));
+            // Transform
+            Component component = prepareComplexMessage(replaced);
+            target.sendMessage(component);
         }
     }
 

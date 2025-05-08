@@ -2,10 +2,9 @@ package fr.jamailun.quickparty.parties;
 
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyMember;
+import fr.jamailun.quickparty.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +40,7 @@ public class PartyMemberImpl implements PartyMember {
     @Override
     public void sendMessage(@NotNull String message) {
         Optional.ofNullable(getOnlinePlayer())
-                .ifPresent(p -> p.sendMessage(ChatColor.translateAlternateColorCodes('&', message)));
+                .ifPresent(p -> p.sendMessage(StringUtils.parseString(message)));
     }
 
 }

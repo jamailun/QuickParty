@@ -16,7 +16,7 @@ players:
     message:
       - "&e---------------------------------------"
       - "&e%player&f have sent you a party invitation."
-      - "&7You can do &a/p accept&7 or &c/p refuse&7."
+      - "&7You can do &a%CMD_ACCEPT&7 or &c%CMD_REFUSE&7."
       - "&e---------------------------------------"
   no-party: "You are not in a party."
   infos:

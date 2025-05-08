@@ -4,6 +4,7 @@ import fr.jamailun.quickparty.QuickPartyMain;
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
+import fr.jamailun.quickparty.utils.StringUtils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -34,7 +35,7 @@ public class FriendlyFireActionListener extends QpListener {
         Entity target = event.getEntity();
         if(shouldCancel(attacker, target)) {
             event.setCancelled(true);
-            attacker.sendMessage("§c"+QuickPartyConfig.getI18n("players.cannot-damage"));
+            attacker.sendMessage(StringUtils.parseString("&c" + QuickPartyConfig.getI18n("players.cannot-damage")));
         }
     }
 

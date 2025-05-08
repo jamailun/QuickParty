@@ -16,7 +16,7 @@ players:
     message:
       - "&e---------------------------------------"
       - "&e%player&f vous envoyé une demande invitation de groupe."
-      - "&7Faites &a/p accept&7 ou &c/p refuse&7."
+      - "&7Faites &a%CMD_ACCEPT&7 ou &c%CMD_REFUSE&7."
       - "&e---------------------------------------"
   no-party: "Commande impossible : il faut être dans un groupe."
   infos:
