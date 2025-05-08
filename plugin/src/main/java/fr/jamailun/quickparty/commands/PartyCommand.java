@@ -84,7 +84,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             for(PartyMember m : members) {
                 String color = m.isPartyLeader() ? i18n("infos.member.color.leader") : i18n("infos.member.color.member");
                 String name = (m.isPartyLeader() ? "&6" : "&a") + m.getOfflinePlayer().getName();
-                String self = m.getUUID().equals(player.getUniqueId()) ?  i18n("infos.member.color.self") : "";
+                String self = m.getUUID().equals(player.getUniqueId()) ?  i18n("infos.member.self") : "";
                 info(player,
                         i18n("infos.member.line")
                                 .replace("%player", name)

@@ -99,10 +99,12 @@ public class PartyImpl implements Party {
             leader = null;
             if(!members.isEmpty()) {
                 leader = members.firstEntry().getValue();
+                leader.setPartyLeader(true);
             } else {
                 // Party is invalid and should be disbanded
                 // All invitations are sequentially removed.
                 List.copyOf(pendingInvitations.keySet()).forEach(this::cancelInvitation);
+                disband();
             }
         }
     }
