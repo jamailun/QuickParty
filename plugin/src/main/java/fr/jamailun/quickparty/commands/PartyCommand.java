@@ -13,9 +13,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class PartyCommand extends CommandHelper implements CommandExecutor, TabCompleter {
 
@@ -159,8 +157,16 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         if(args.length == 2) {
             String arg1 = args[1].toLowerCase();
             if("invite".equalsIgnoreCase(args[0])) {
+                Set<UUID> existing = new HashSet<>();
+                Party party = QuickParty.getPlayerParty(player);
+                if(party != null) {
+                    party.getMembers().forEach(m -> existing.add(m.getUUID()));
+                    party.getPendingInvitations().forEach(i -> existing.add(i.getInvitedPlayer().getUniqueId()));
+                } else {
+                    existing.add(player.getUniqueId());
+                }
                 return Bukkit.getOnlinePlayers().stream()
-                        .filter(p -> !Objects.equals(p.getUniqueId(), player.getUniqueId()))
+                        .filter(p -> !existing.contains(p.getUniqueId()))
                         .map(Player::getName)
                         .filter(n -> n.toLowerCase().contains(arg1))
                         .toList();
