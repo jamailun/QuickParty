@@ -37,6 +37,9 @@ public class PartiesManagerImpl implements PartiesManager {
     public @NotNull PartyInvitationResult invitePlayer(@NotNull Player playerFrom, @NotNull Player playerTo) {
         Party party = getPlayerParty(playerFrom);
         if(party != null) {
+            if(party.hasMember(playerTo.getUniqueId())) {
+                return PartyInvitationState.PLAYER_ALREADY_IN_PARTY.asError();
+            }
             if(party.getSize() >= QuickPartyConfig.getInstance().getMaxPartySize()) {
                 return PartyInvitationState.PARTY_FULL.asError();
             }
@@ -84,6 +87,7 @@ public class PartiesManagerImpl implements PartiesManager {
 
     void playerJoined(@NotNull UUID uuid, @NotNull Party party) {
         partiesAsMap.put(uuid, party);
+        invitations.remove(uuid);
     }
 
     void removeParty(@NotNull Party party) {

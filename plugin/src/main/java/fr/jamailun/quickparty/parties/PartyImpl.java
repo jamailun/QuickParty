@@ -1,5 +1,6 @@
 package fr.jamailun.quickparty.parties;
 
+import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.events.PartyDisbandEvent;
 import fr.jamailun.quickparty.api.events.PartyInviteEvent;
 import fr.jamailun.quickparty.api.events.PartyLeftEvent;
@@ -78,6 +79,12 @@ public class PartyImpl implements Party {
 
     @Override
     public void join(@NotNull Player player) {
+        // Leave previous ?
+        Party oldParty = QuickParty.getPlayerParty(player);
+        if(oldParty != null)
+            oldParty.leave(player.getUniqueId());
+
+        // Join new
         String message = QuickPartyConfig.getI18n("players.invitation.join-alert")
                 .replace("%player", player.getName());
         getMembers().forEach(m -> m.sendMessage(message));
