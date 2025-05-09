@@ -35,17 +35,23 @@ For now, only two parameters are configurable :
 
 List of placeholders.
 
-|          Placeholder           | Value                                                                         |
-|:------------------------------:|-------------------------------------------------------------------------------|
-|        `qpa_has_party`         | Return `true` if the current player has a party, `false` otherwise.           |
-|       `qpa_party_leader`       | Return the name of the current party.                                         |
-|     `qpa_party_is_leader`      | Return `true` if the current player is the party leader. `false` otherwise.   |
-|   `qpa_party_creation_date`    | Return the date-time of creation of th party, in the ISO format..             |
-|       `qpa_party_leader`       | Return the **total** size of the party, i.e. members and pending invitations. |
-|       `qpa_party_leader`       | Return the amount of **members** in the party.                                |
-|       `qpa_party_leader`       | Return the amount of **invitations** of the party.                            |
-|   `qpa_party_member_<index>`   | Return the name of the member in the specific <index> position.               |
-| `qpa_party_invitation_<index>` | Return the name of the invited player in the specific <index> invitation.     |
+|          Placeholder           | Value                                                                                                                   |
+|:------------------------------:|-------------------------------------------------------------------------------------------------------------------------|
+|        `qpa_has_party`         | Return `true` if the current player has a party, `false` otherwise.                                                     |
+|                                |                                                                                                                         ||
+|       `qpa_party_leader`       | Return the name of the current party.                                                                                   |
+|     `qpa_party_is_leader`      | Return `true` if the current player is the party leader. `false` otherwise.                                             |
+|   `qpa_party_creation_date`    | Return the date-time of creation of th party, in the ISO format..                                                       |
+|       `qpa_party_leader`       | Return the **total** size of the party, i.e. members and pending invitations.                                           |
+|       `qpa_party_leader`       | Return the amount of **members** in the party.                                                                          |
+|       `qpa_party_leader`       | Return the amount of **invitations** of the party.                                                                      |
+|   `qpa_party_member_<index>`   | Return the name of the member in the specific <index> position.                                                         |
+| `qpa_party_invitation_<index>` | Return the name of the invited player in the specific <index> invitation.                                               |
+|   `qpa_party_color_<index>`    | Return the "color" of the member in the specified index. For now, it's `&6` for the leader, and nothing for the others. |
+| `qpa_party_is_leader_<index>`  | Return the `true` if the member in the specified index is the leader, or `false` otherwise.                             |
 
 > [!NOTE]
 > For all `qpa_party_*` placeholders, if the player is not in a party, an empty string will be returned.
+
+> [!TIP]
+> To integrate with [TAB](https://github.com/NEZNAMY/TAB) (which is really common), you can use [this](https://github.com/jamailun/QuickParty/blob/main/documentation/integration_TAB.md) example for the scoreboard.
