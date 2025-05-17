@@ -11,7 +11,6 @@ import fr.jamailun.quickparty.listeners.FriendlyFireActionListener;
 import fr.jamailun.quickparty.parties.PartiesManagerImpl;
 import fr.jamailun.quickparty.expansions.QuickPartyPlaceholderExpansion;
 import fr.jamailun.quickparty.utils.Metrics;
-import fr.jamailun.ultimatespellsystem.api.UltimateSpellSystem;
 import fr.jamailun.ultimatespellsystem.api.providers.AlliesProvider;
 import lombok.Getter;
 import org.bukkit.Bukkit;
@@ -69,11 +68,11 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
         }
 
         // USS
-        if(UltimateSpellSystem.isValid()) {
+        if (Bukkit.getPluginManager().getPlugin("UltimateSpellSystem") == null) {
+            QuickPartyLogger.info("Ultimate Spell System not found. No expansion added.");
+        } else {
             AlliesProvider.instance().register(new UssAlliesCheckExpansion(), "quickparty");
             QuickPartyLogger.info("Ultimate Spell System extension registered.");
-        } else {
-            QuickPartyLogger.info("Ultimate Spell System not found. No expansion added.");
         }
 
         // bStats
