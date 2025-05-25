@@ -1,5 +1,5 @@
 # Don't change this value manually.
-version: "1.0"
+version: "1.1"
 
 # If true, 'debug' log will be printed into the console.
 debug: false
@@ -18,3 +18,21 @@ parties:
 format:
   # Output date format.
   dateTime: "HH:mm:ss"
+
+placeholders:
+  name_prefix:
+    leader:
+      online: "&6★ "
+      offline: "&6★ &7"
+    member:
+      online: "&a▪ "
+      offline: "&a▫ &7"
+    self: "&2▪ &a"
+  name_suffix:
+    leader:
+      online: ""
+      offline: ""
+    member:
+      online: ""
+      offline: ""
+    self: ""

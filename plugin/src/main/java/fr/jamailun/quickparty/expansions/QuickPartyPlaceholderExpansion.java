@@ -2,6 +2,9 @@ package fr.jamailun.quickparty.expansions;
 
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
+import fr.jamailun.quickparty.api.parties.PartyInvitation;
+import fr.jamailun.quickparty.api.parties.PartyMember;
+import fr.jamailun.quickparty.configuration.PrefixReferential;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +23,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
     private final PluginMeta meta;
 
-    private static final Pattern MEMBER_NUM_EXTRACTOR = Pattern.compile("party_(member|invitation|invit|is_leader|color)_([1-9][0-9]*)");
+    private static final Pattern MEMBER_NUM_EXTRACTOR = Pattern.compile("party_(nice_member|member|invitation|invit|is_leader|color)_([1-9][0-9]*)");
 
     @Override
     public @Nullable String onPlaceholderRequest(@Nullable Player player, @NotNull String param) {
@@ -41,19 +44,28 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
             switch (partyNumExt.group(1)) {
                 case "member" -> {
                     if(index < party.getMembers().size())
-                        return List.copyOf(party.getMembers()).get(index).getOfflinePlayer().getName();
+                        return getMember(party, index).getOfflinePlayer().getName();
                 }
                 case "is_leader" -> {
                     if(index < party.getMembers().size())
-                        return bool(List.copyOf(party.getMembers()).get(index).isPartyLeader());
+                        return bool(getMember(party, index).isPartyLeader());
                 }
                 case "color" -> {
                     if(index < party.getMembers().size())
-                        return List.copyOf(party.getMembers()).get(index).isPartyLeader() ? "&6" : "";
+                        return getMember(party, index).isPartyLeader() ? "&6" : "";
                 }
                 case "invitation", "invit" -> {
                     if(index < party.getPendingInvitations().size())
-                        return List.copyOf(party.getPendingInvitations()).get(index).getInvitedPlayer().getName();
+                        return getInvitation(party, index).getInvitedPlayer().getName();
+                }
+                case "nice_member" -> {
+                    if(index < party.getMembers().size()) {
+                        PartyMember member = getMember(party, index);
+                        PrefixReferential ref = of(player, member);
+                        String prefix = QuickPartyConfig.getInstance().getPrefix(ref, member.isOnline());
+                        String suffix = QuickPartyConfig.getInstance().getPrefix(ref, member.isOnline());
+                        return prefix + member.getOfflinePlayer().getName() + suffix;
+                    }
                 }
             }
             return "&cOutOfBound";
@@ -87,6 +99,17 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
     private @NotNull String bool(boolean condition) {
         return condition ? "true" : "false";
+    }
+
+    private @NotNull PartyMember getMember(Party party, int index) {
+        return List.copyOf(party.getMembers()).get(index);
+    }
+    private @NotNull PartyInvitation getInvitation(Party party, int index) {
+        return List.copyOf(party.getPendingInvitations()).get(index);
+    }
+    private PrefixReferential of(Player self, PartyMember other) {
+        if(self.getUniqueId().equals(other.getUUID())) return PrefixReferential.SELF;
+        return other.isPartyLeader() ? PrefixReferential.LEADER : PrefixReferential.MEMBER;
     }
 
 }

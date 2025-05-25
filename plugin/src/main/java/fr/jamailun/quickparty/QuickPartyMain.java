@@ -34,8 +34,7 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
     public void onEnable() {
         QuickPartyLogger.info("Enabling plugin.");
 
-        // default config
-        saveDefaultConfig();
+        // Configuration
         new QuickPartyConfig(this);
 
         // Managers

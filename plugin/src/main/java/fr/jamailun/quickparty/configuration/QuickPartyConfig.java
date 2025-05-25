@@ -63,6 +63,9 @@ public class QuickPartyConfig {
 
         // Reload
         config = store.load(file.toPath());
+        config.checkValidity();
+        store.save(config, file.toPath());
+
         isDebug = config.isDebug();
 
         reloadLang();
@@ -163,6 +166,13 @@ public class QuickPartyConfig {
         } catch(Exception e) {
             QuickPartyLogger.error("Could not walk over internal lang files", e);
         }
+    }
+
+    public String getPrefix(PrefixReferential referential, boolean isOnline) {
+        return config.getPlaceholders().prefix().get(referential, isOnline);
+    }
+    public String getSuffix(PrefixReferential referential, boolean isOnline) {
+        return config.getPlaceholders().suffix().get(referential, isOnline);
     }
 
 }
