@@ -11,6 +11,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 /**
  * Cancel friendly fire, if needed.
  */
@@ -40,8 +42,15 @@ public class FriendlyFireActionListener extends QpListener {
     }
 
     private boolean shouldCancel(@NotNull Entity attacker, @NotNull Entity target) {
+        // Don't cancel if attacker == target
+        if(Objects.equals(target.getUniqueId(), attacker.getUniqueId()))
+            return false;
+
+        // Get the party. Cancel if no party or if target not in the same one.
         Party party = QuickParty.getPlayerParty(attacker.getUniqueId());
         if(party == null || !party.hasMember(target.getUniqueId())) return false;
+
+        // Cancel according to configuration rule.
         return ! QuickPartyConfig.getInstance().isFriendlyFireEnabled();
     }
 
