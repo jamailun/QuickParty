@@ -8,7 +8,9 @@ import fr.jamailun.quickparty.configuration.PrefixReferential;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import lombok.RequiredArgsConstructor;
+import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -59,13 +61,13 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
                         return getInvitation(party, index).getInvitedPlayer().getName();
                 }
                 case "nice_member" -> {
-                    if(index < party.getMembers().size()) {
-                        PartyMember member = getMember(party, index);
-                        PrefixReferential ref = of(player, member);
-                        String prefix = QuickPartyConfig.getInstance().getPrefix(ref, member.isOnline());
-                        String suffix = QuickPartyConfig.getInstance().getPrefix(ref, member.isOnline());
-                        return prefix + member.getOfflinePlayer().getName() + suffix;
-                    }
+                    if(index >= party.getMembers().size())
+                        return "";
+                    PartyMember member = getMember(party, index);
+                    PrefixReferential ref = of(player, member);
+                    String prefix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getPrefix(ref, member.isOnline()));
+                    String suffix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getSuffix(ref, member.isOnline()));
+                    return prefix + member.getOfflinePlayer().getName() + suffix;
                 }
             }
             return "&cOutOfBound";
@@ -80,6 +82,13 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
             case "party_size_invitations" -> String.valueOf(party.getPendingInvitations().size());
             default -> "null";
         };
+    }
+
+    private @NotNull String parse(@NotNull OfflinePlayer player, @NotNull String raw) {
+        String named = player.getName() == null ? raw : raw.replace("{NAME}", player.getName());
+        if(PlaceholderAPI.containsPlaceholders(named))
+            return PlaceholderAPI.setPlaceholders(player, named);
+        return named;
     }
 
     @Override
