@@ -19,7 +19,7 @@ public class MainConfiguration {
     /**
      * Current target version.
      */
-    private static final String LATEST_VERSION = "1.1";
+    private static final String LATEST_VERSION = "1.2";
 
     @Comment("If true, 'debug' log will be printed into the console.")
     private boolean debug = false;
@@ -57,42 +57,38 @@ public class MainConfiguration {
         }
     }
 
-    @Comment({"", "Placeholder customization."})
+    @Comment({"", "Placeholder customization.", "Used by the %qpa_party_nice_member_<INDEX>% placeholder."})
     private PlaceholdersEntry placeholders;
 
     public record PlaceholdersEntry(PrefixEntry prefix, PrefixEntry suffix) {
         PlaceholdersEntry asValid() {
             return new PlaceholdersEntry(
-                prefix == null ? new PrefixEntry(new OnlineEntry("&6★ ", "&6★ &7"), new OnlineEntry("&a▪ ", "&a▫ &7"), "&2▪ &a") : prefix.asValid(),
-                suffix == null ? new PrefixEntry(new OnlineEntry("",""), new OnlineEntry("", ""), "") : suffix.asValid()
+                prefix == null ? new PrefixEntry(new OnlineEntry("&6★ ", "&6★ &7", "&2★ &6"), new OnlineEntry("&a▪ ", "&a▫ &7", "&2b &a")) : prefix.asValid(),
+                suffix == null ? new PrefixEntry(new OnlineEntry("","", ""), new OnlineEntry("", "", "")) : suffix.asValid()
             );
         }
     }
-    public record PrefixEntry(OnlineEntry leader, OnlineEntry member, String self) {
+    public record PrefixEntry(OnlineEntry leader, OnlineEntry member) {
         PrefixEntry asValid() {
             return new PrefixEntry(
-                leader == null ? new OnlineEntry("", "") : leader.asValid(),
-                member == null ? new OnlineEntry("", "") : member.asValid(),
-                Objects.requireNonNullElse(self, "")
+                leader == null ? new OnlineEntry("", "", "") : leader.asValid(),
+                member == null ? new OnlineEntry("", "", "") : member.asValid()
             );
         }
-        public String get(PrefixReferential referential, boolean isOnline) {
-            return switch (referential) {
-                case LEADER -> leader().get(isOnline);
-                case MEMBER -> member().get(isOnline);
-                case SELF -> self();
-            };
+        public String get(boolean isLeader, boolean isSelf, boolean isOnline) {
+            OnlineEntry entry = isLeader ? leader : member;
+            return entry.get(isSelf, isOnline);
         }
     }
-    private record OnlineEntry(String online, String offline) {
-        OnlineEntry asValid() {return new OnlineEntry(Objects.requireNonNullElse(online, ""), Objects.requireNonNullElse(offline, ""));}
-        String get(boolean isOnline) {
-            return isOnline ? online : offline;
+    private record OnlineEntry(String online, String offline, String self) {
+        OnlineEntry asValid() {return new OnlineEntry(Objects.requireNonNullElse(online, ""), Objects.requireNonNullElse(offline, ""), Objects.requireNonNullElse(self, ""));}
+        String get(boolean isSelf, boolean isOnline) {
+            return isSelf ? self : (isOnline ? online : offline);
         }
     }
 
-    @Comment("Dont change this value manually.")
-    @Setter private String version = "1.1";
+    @Comment({"","Dont change this value manually."})
+    @Setter private String version = LATEST_VERSION;
 
     public void checkValidity() {
         if(LATEST_VERSION.compareTo(Objects.requireNonNullElse(version, "0")) > 0) {

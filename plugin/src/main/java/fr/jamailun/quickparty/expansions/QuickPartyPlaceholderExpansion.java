@@ -4,7 +4,6 @@ import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyMember;
-import fr.jamailun.quickparty.configuration.PrefixReferential;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import io.papermc.paper.plugin.configuration.PluginMeta;
 import lombok.RequiredArgsConstructor;
@@ -64,9 +63,11 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
                     if(index >= party.getMembers().size())
                         return "";
                     PartyMember member = getMember(party, index);
-                    PrefixReferential ref = of(player, member);
-                    String prefix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getPrefix(ref, member.isOnline()));
-                    String suffix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getSuffix(ref, member.isOnline()));
+                    boolean isLeader = member.isPartyLeader();
+                    boolean isSelf = member.getUUID().equals(player.getUniqueId());
+                    boolean isOnline = member.isOnline();
+                    String prefix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getPrefix(isLeader, isSelf, isOnline));
+                    String suffix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getSuffix(isLeader, isSelf, isOnline));
                     return prefix + member.getOfflinePlayer().getName() + suffix;
                 }
             }
@@ -115,10 +116,6 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
     }
     private @NotNull PartyInvitation getInvitation(Party party, int index) {
         return List.copyOf(party.getPendingInvitations()).get(index);
-    }
-    private PrefixReferential of(Player self, PartyMember other) {
-        if(self.getUniqueId().equals(other.getUUID())) return PrefixReferential.SELF;
-        return other.isPartyLeader() ? PrefixReferential.LEADER : PrefixReferential.MEMBER;
     }
 
 }

@@ -1,6 +1,3 @@
-# Don't change this value manually.
-version: "1.1"
-
 # If true, 'debug' log will be printed into the console.
 debug: false
 
@@ -19,20 +16,27 @@ format:
   # Output date format.
   dateTime: "HH:mm:ss"
 
+# Placeholder customization.
+# Used by the %qpa_party_nice_member_<INDEX>% placeholder.
 placeholders:
-  name_prefix:
+  prefix:
     leader:
-      online: "&6★ "
-      offline: "&6★ &7"
+      online: '&6&l▪ &6'
+      offline: '&6▫ &7'
+      self: '&2&l▪ &6'
     member:
-      online: "&a▪ "
-      offline: "&a▫ &7"
-    self: "&2▪ &a"
-  name_suffix:
+      online: '&a▪ &e'
+      offline: '&a▫ &7'
+      self: '&b▪ &a'
+  suffix:
     leader:
-      online: ""
-      offline: ""
+      online: ' &c%player_health_rounded% ❤'
+      offline: ''
+      self: ' &c%player_health_rounded% ❤'
     member:
-      online: ""
-      offline: ""
-    self: ""
+      online: ' &c%player_health_rounded% ❤'
+      offline: ''
+      self: ' &c%player_health_rounded% ❤'
+
+# Don't change this value manually.
+version: "1.2"

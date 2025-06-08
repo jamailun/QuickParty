@@ -168,11 +168,11 @@ public class QuickPartyConfig {
         }
     }
 
-    public String getPrefix(PrefixReferential referential, boolean isOnline) {
-        return config.getPlaceholders().prefix().get(referential, isOnline);
+    public String getPrefix(boolean isLeader, boolean isSelf, boolean isOnline) {
+        return config.getPlaceholders().prefix().get(isLeader, isSelf, isOnline);
     }
-    public String getSuffix(PrefixReferential referential, boolean isOnline) {
-        return config.getPlaceholders().suffix().get(referential, isOnline);
+    public String getSuffix(boolean isLeader, boolean isSelf, boolean isOnline) {
+        return config.getPlaceholders().suffix().get(isLeader, isSelf, isOnline);
     }
 
 }
