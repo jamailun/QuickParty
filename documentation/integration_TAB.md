@@ -2,7 +2,37 @@
 
 In this example, we'll use TAB conditions and TAB scoreboard.
 
-## 1) Scoreboard
+## 1) Prepare the QP config
+
+In the QuickParty plugin config file, here is what I use.
+
+Each prefix and suffix will be used in the TAB plugin.
+
+```yaml
+# ...
+placeholders:
+  prefix:
+    leader:
+      online: '&6&l☉ &6'
+      offline: '&e☉ &7'
+      self: '&2&l☉ &6'
+    member:
+      online: '&a▪ &f'
+      offline: '&a▫ &7'
+      self: '&2▪ &b'
+  suffix:
+    leader:
+      online: ' &c%player_health_rounded% ❤'
+      offline: ''
+      self: ' &c%player_health_rounded% ❤'
+    member:
+      online: ' &c%player_health_rounded% ❤'
+      offline: ''
+      self: ' &c%player_health_rounded% ❤'
+# ...
+```
+
+## 2) Scoreboard
 
 This is the `scoreboards` section of `TAB/config.yml`.
 
@@ -14,22 +44,18 @@ scoreboard:
   # ... Existing configuration, don't remove it ;-)
   #
   scoreboards:
-    # Other scoreboards you may have.
-    #
+    # ... Other scoreboards you may have ...
     QuickParty_SB:
       title: "&7====&9 [ Party ] &7===="
       display-condition: '%qpa_has_party%=true'
       lines:
       - ''
       - '&eMembers :'
-      # We always have one member
-      - "&b%qpa_party_color_1%- %qpa_party_member_1%"
-      # Additional members (up to 4 total)
-      - '%condition:party_members_2%'
-      - '%condition:party_members_3%'
-      - '%condition:party_members_4%'
+      - '%qpa_party_nice_member_1%'
+      - '%qpa_party_nice_member_2%'
+      - '%qpa_party_nice_member_3%'
+      - '%qpa_party_nice_member_4%'
       - ''
-      # Invitations. We only display the section when needed.
       - '%condition:party_invits%'
       - '%condition:party_invits_1%'
       - '%condition:party_invits_2%'
@@ -45,27 +71,9 @@ Obviously, you can keep your other `condition` entries.
 
 ```yaml
 conditions:
-  #
-  # Existing conditions...
-  #
+  # ... Existing conditions...
   
-  # Get the 2nd, 3rd and 4th party member.
-  party_members_2:
-    conditions:
-    - '%qpa_party_size_members%>1'
-    yes: "&b%qpa_party_color_2%- %qpa_party_member_2%"
-    no: ""
-  party_members_3:
-    conditions:
-    - '%qpa_party_size_members%>2'
-    yes: "&b%qpa_party_color_3%- %qpa_party_member_3%"
-    no: ""
-  party_members_4:
-    conditions:
-    - '%qpa_party_size_members%>3'
-    yes: "&b%qpa_party_color_4%- %qpa_party_member_4%"
-    no: ""
-  # get the invitations
+  # Get the party invitation nicely.
   party_invits:
     conditions:
     - '%qpa_party_size_invitations%>0'
@@ -79,17 +87,17 @@ conditions:
   party_invits_1:
     conditions:
     - '%qpa_party_size_invitations%>0'
-    yes: "&7- %qpa_party_invitation_1%"
+    yes: "&7▪ %qpa_party_invitation_1%"
     no: ""
   party_invits_2:
     conditions:
     - '%qpa_party_size_invitations%>1'
-    yes: "&7- %qpa_party_invitation_2%"
+    yes: "&7▪ %qpa_party_invitation_2%"
     no: ""
   party_invits_3:
     conditions:
     - '%qpa_party_size_invitations%>2'
-    yes: "&7- %qpa_party_invitation_3%"
+    yes: "&7▪ %qpa_party_invitation_3%"
     no: ""
 ```
 
