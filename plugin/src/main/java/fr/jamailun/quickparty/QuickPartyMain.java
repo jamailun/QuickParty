@@ -8,6 +8,7 @@ import fr.jamailun.quickparty.commands.PartyCommand;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import fr.jamailun.quickparty.expansions.UssAlliesCheckExpansion;
 import fr.jamailun.quickparty.listeners.FriendlyFireActionListener;
+import fr.jamailun.quickparty.listeners.JoinLeaveListener;
 import fr.jamailun.quickparty.parties.PartiesManagerImpl;
 import fr.jamailun.quickparty.expansions.QuickPartyPlaceholderExpansion;
 import fr.jamailun.quickparty.utils.Metrics;
@@ -46,6 +47,7 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
 
         // Listeners
         new FriendlyFireActionListener(this);
+        new JoinLeaveListener(this);
 
         registerExpansions();
     }
