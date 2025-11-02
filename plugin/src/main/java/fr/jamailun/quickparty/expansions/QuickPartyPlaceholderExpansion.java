@@ -5,7 +5,6 @@ import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyMember;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
-import io.papermc.paper.plugin.configuration.PluginMeta;
 import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
@@ -18,11 +17,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings("UnstableApiUsage")
 @RequiredArgsConstructor
 public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
-    private final PluginMeta meta;
+    private final String version;
 
     private static final Pattern MEMBER_NUM_EXTRACTOR = Pattern.compile("party_(nice_member|member|invitation|invit|is_leader|color)_([1-9][0-9]*)");
 
@@ -104,7 +102,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return meta.getVersion();
+        return version;
     }
 
     private @NotNull String bool(boolean condition) {

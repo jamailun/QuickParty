@@ -17,6 +17,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- versions -->
+        <configlib.version>4.6.3</configlib.version>
     </properties>
 
     <dependencies>
@@ -31,7 +33,7 @@
         <dependency>
             <groupId>de.exlll</groupId>
             <artifactId>configlib-yaml</artifactId>
-            <version>4.5.0</version>
+            <version>${configlib.version}</version>
         </dependency>
     </dependencies>
 

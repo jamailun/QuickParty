@@ -57,13 +57,12 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
         // ...
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private void registerExpansions() {
         // Placeholder API
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             QuickPartyLogger.info("PlaceholderAPI not found. No expansion added.");
         } else {
-            boolean success = new QuickPartyPlaceholderExpansion(getPluginMeta()).register();
+            boolean success = new QuickPartyPlaceholderExpansion(getDescription().getVersion()).register();
             if(success) QuickPartyLogger.info("PlaceholderAPI extension registered.");
             else QuickPartyLogger.error("Could not register PlaceholderAPI extension.");
         }

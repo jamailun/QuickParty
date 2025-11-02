@@ -6,10 +6,9 @@ import fr.jamailun.quickparty.QuickPartyLogger;
 import fr.jamailun.quickparty.utils.JarReader;
 import fr.jamailun.quickparty.utils.StringUtils;
 import lombok.Getter;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -100,17 +99,23 @@ public class QuickPartyConfig {
         }
     }
 
-    private static @NotNull Component prepareComplexMessage(@NotNull String raw) {
+    private static @NotNull BaseComponent @NotNull [] prepareComplexMessage(@NotNull String raw) {
         List<String> parts = StringUtils.splitWithDelimiters(raw, "%CMD_ACCEPT", "%CMD_REFUSE");
-        List<Component> components = new ArrayList<>();
+        List<BaseComponent> components = new ArrayList<>();
         for(String part : parts) {
-            components.add(switch (part) {
-                case "%CMD_ACCEPT" -> Component.text("/p accept", NamedTextColor.GREEN).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
-                case "%CMD_REFUSE" -> Component.text("/p refuse", NamedTextColor.RED).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse"));
-                default -> StringUtils.parseString(part);
-            });
+            TextComponent text;
+            if("%CMD_ACCEPT".equals(part)) {
+                text = new TextComponent("§a/p accept");
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
+            } else if("%CMD_REFUSE".equals(part)) {
+                text = new TextComponent("§c/p refuse");
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse"));
+            } else {
+                text = new TextComponent(StringUtils.parseString(part));
+            }
+            components.add(text);
         }
-        return Component.join(JoinConfiguration.noSeparators(), components);
+        return components.toArray(new BaseComponent[0]);
     }
 
     public static @NotNull String getI18n(@NotNull String key) {
@@ -142,8 +147,8 @@ public class QuickPartyConfig {
             // Replace
             String replaced = line.replace("%player", inviter.getName());
             // Transform
-            Component component = prepareComplexMessage(replaced);
-            target.sendMessage(component);
+            BaseComponent[] components = prepareComplexMessage(replaced);
+            target.spigot().sendMessage(components);
         }
     }
 

@@ -1,7 +1,6 @@
 package fr.jamailun.quickparty.utils;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.ChatColor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.PrintWriter;
@@ -12,8 +11,8 @@ import java.util.List;
 public final class StringUtils {
     private StringUtils() {}
 
-    public static @NotNull Component parseString(@NotNull String raw) {
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(raw);
+    public static @NotNull String parseString(@NotNull String raw) {
+        return ChatColor.translateAlternateColorCodes('&', raw);
     }
 
     public static @NotNull List<String> splitWithDelimiters(@NotNull String string, @NotNull String @NotNull ... cuts) {
