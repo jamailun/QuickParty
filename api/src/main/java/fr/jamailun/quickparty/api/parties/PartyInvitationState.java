@@ -2,8 +2,12 @@ package fr.jamailun.quickparty.api.parties;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * State of an invitation.
+ */
 @Getter
 public enum PartyInvitationState {
 
@@ -32,11 +36,13 @@ public enum PartyInvitationState {
         this.success = success;
     }
 
+    @ApiStatus.Internal
     public @NotNull PartyInvitationResult asSuccess(@NotNull Party party) {
         Preconditions.checkState(success, "State " + this + " cannot return a successful result.");
         return new PartyInvitationResult(this, party);
     }
 
+    @ApiStatus.Internal
     public @NotNull PartyInvitationResult asError() {
         Preconditions.checkState(!success, "State " + this + " cannot return an error result.");
         return new PartyInvitationResult(this, null);

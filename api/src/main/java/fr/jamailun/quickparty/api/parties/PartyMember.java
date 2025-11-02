@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.UUID;
 
 /**
- * Represents a bukkit player, member of a party.
+ * Represents a bukkit {@link Player}, member of a {@link Party}.
  */
 public interface PartyMember {
 

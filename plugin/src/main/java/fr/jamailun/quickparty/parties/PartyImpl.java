@@ -1,5 +1,6 @@
 package fr.jamailun.quickparty.parties;
 
+import com.google.common.base.Preconditions;
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.events.PartyDisbandEvent;
 import fr.jamailun.quickparty.api.events.PartyInviteEvent;
@@ -130,7 +131,7 @@ public class PartyImpl implements Party {
                 case NORMAL -> removed.sendMessage(i18n( "leave"));
                 case KICKED -> removed.sendMessage(i18n( "kick-info"));
                 case DISBANDED -> removed.sendMessage(i18n( "disbanded"));
-            };
+            }
         }
         manager.playerQuit(uuid);
     }
@@ -149,12 +150,15 @@ public class PartyImpl implements Party {
 
     @Override
     public void promoteMember(@NotNull OfflinePlayer player) {
+        PartyMemberImpl member = members.get(player.getUniqueId());
+        Preconditions.checkArgument(member != null, "Provided player " + player.getUniqueId() + " does not belong to the party.");
+
         // Remove old
         PartyMemberImpl oldLeader = leader;
         oldLeader.setPartyLeader(false);
 
         // Set new
-        leader = members.get(player.getUniqueId());
+        leader = member;
         leader.setPartyLeader(true);
 
         // Events
