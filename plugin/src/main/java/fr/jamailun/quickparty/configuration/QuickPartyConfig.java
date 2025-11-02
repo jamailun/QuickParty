@@ -3,6 +3,8 @@ package fr.jamailun.quickparty.configuration;
 import de.exlll.configlib.YamlConfigurationProperties;
 import de.exlll.configlib.YamlConfigurationStore;
 import fr.jamailun.quickparty.QuickPartyLogger;
+import fr.jamailun.quickparty.api.parties.TeleportMode;
+import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
 import fr.jamailun.quickparty.utils.JarReader;
 import fr.jamailun.quickparty.utils.StringUtils;
 import lombok.Getter;
@@ -180,4 +182,8 @@ public class QuickPartyConfig {
         return config.getPlaceholders().suffix().get(isLeader, isSelf, isOnline);
     }
 
+
+    public @NotNull TeleportModeSection getTeleportRules(@NotNull TeleportMode mode) {
+        return config.getTeleportation().completeFor(mode);
+    }
 }

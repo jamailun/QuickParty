@@ -16,6 +16,46 @@ format:
   # Output date format.
   dateTime: "HH:mm:ss"
 
+# Teleport rules and costs
+teleportation:
+  # Default config. Each mode will be able to override every property.
+  default:
+    enabled: true
+    # Optional permission for using the mode. 'none' or '*' or '' disables it.
+    permission: none
+    # If true, the "destination" player will need to confirm.
+    # In the case of "ALL_TO_LEADER" call, it will be the members (source) that will have to confirm.
+    needConfirmation: true
+    # Duration during witch the player must not move before TP
+    teleportWaitSecs: 5
+    # The cost to pay
+    cost:
+      type: item
+      data:
+        type: EMERALD
+        count: 2
+  modes:
+    # The leader makes the call to TP every member to him.
+    ALL_TO_LEADER:
+      enabled: true
+      permission: some.permission
+      cost:
+        type: item
+        data:
+          type: EMERALD
+          count: 12
+      teleportWaitSecs: 10
+    # Allow the leader to TP to a member.
+    LEADER_TO_MEMBER:
+      enabled: true
+    # Any member can teleport to the leader.
+    MEMBER_TO_LEADER:
+      enabled: true
+    # Any member can teleport to any other member.
+    MEMBER_TO_MEMBER:
+      enabled: true
+
+
 # Placeholder customization.
 # Used by the %qpa_party_nice_member_<INDEX>% placeholder.
 placeholders:

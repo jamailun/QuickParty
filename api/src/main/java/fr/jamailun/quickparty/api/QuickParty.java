@@ -1,6 +1,7 @@
 package fr.jamailun.quickparty.api;
 
 import com.google.common.base.Preconditions;
+import fr.jamailun.quickparty.api.cost.PlayerCostsRegistry;
 import fr.jamailun.quickparty.api.parties.PartiesManager;
 import fr.jamailun.quickparty.api.parties.Party;
 import org.bukkit.entity.Player;
@@ -48,6 +49,14 @@ public final class QuickParty {
      */
     public static @Nullable Party getPlayerParty(@NotNull UUID uuid) {
         return getPartiesManager().getPlayerParty(uuid);
+    }
+
+    /**
+     * Get the player costs registry.
+     * @return the non-null instance.
+     */
+    public static @NotNull PlayerCostsRegistry getCostsRegistry() {
+        return plugin.getCostsRegistry();
     }
 
 }

@@ -3,8 +3,12 @@ package fr.jamailun.quickparty.configuration;
 import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
 import fr.jamailun.quickparty.QuickPartyLogger;
+import fr.jamailun.quickparty.api.parties.TeleportMode;
+import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
+import fr.jamailun.quickparty.configuration.parts.TeleportationSection;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -19,7 +23,7 @@ public class MainConfiguration {
     /**
      * Current target version.
      */
-    private static final String LATEST_VERSION = "1.2";
+    private static final String LATEST_VERSION = "2.0";
 
     @Comment("If true, 'debug' log will be printed into the console.")
     private boolean debug = false;
@@ -32,6 +36,9 @@ public class MainConfiguration {
 
     @Comment({"","Formats configuration"})
     private FormatSettings format;
+
+    @Comment({"", "Teleport rules and costs"})
+    private TeleportationSection teleportation;
 
     public record PartySettings(
         @Comment("If the party members can deal damage between them.")
@@ -107,6 +114,10 @@ public class MainConfiguration {
         // Format
         if(format == null) format = new FormatSettings(null);
         format = format.asValid();
+
+        // Teleportation
+        if(teleportation == null) teleportation = new TeleportationSection(null, null);
+        teleportation = teleportation.asValid();
 
         // Placeholders
         if(placeholders == null) placeholders = new PlaceholdersEntry(null, null);

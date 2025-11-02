@@ -6,6 +6,7 @@ import fr.jamailun.quickparty.api.parties.PartiesManager;
 import fr.jamailun.quickparty.commands.PartyAdminCommand;
 import fr.jamailun.quickparty.commands.PartyCommand;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
+import fr.jamailun.quickparty.costs.CostRegistryImpl;
 import fr.jamailun.quickparty.expansions.UssAlliesCheckExpansion;
 import fr.jamailun.quickparty.listeners.FriendlyFireActionListener;
 import fr.jamailun.quickparty.listeners.JoinLeaveListener;
@@ -24,11 +25,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin {
 
     private PartiesManager partiesManager;
+    private final CostRegistryImpl costsRegistry = new CostRegistryImpl();
 
     @Override
     public void onLoad() {
         QuickParty.setPlugin(this);
         QuickPartyLogger.initialize(this);
+        costsRegistry.registerBasics();
     }
 
     @Override
