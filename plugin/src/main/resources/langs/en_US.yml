@@ -48,6 +48,18 @@ players:
     success:
       tpall: "A group-teleportation offer has been sent to&e %count&r member(s)."
     no-members-tpall: "No member could receive the group-teleportation request."
+    messages:
+      tpall:
+        - "&e---------------------------------------"
+        - "&eLeader &6%player&e sent you a&a group-teleportation&e to his location."
+        - "&7You can do &a%CMD_ACCEPT&7 or &c%CMD_REFUSE&7."
+        - "&e---------------------------------------"
+      tp:
+        - "&e---------------------------------------"
+        - "&eParty member &l%player&e sent you a&a teleportation request&e to&l your&r location."
+        - "&7You can do &a%CMD_ACCEPT&7 or &c%CMD_REFUSE&7."
+        - "&e---------------------------------------"
+
 
 admin:
   reloaded: "Configuration reloaded."
