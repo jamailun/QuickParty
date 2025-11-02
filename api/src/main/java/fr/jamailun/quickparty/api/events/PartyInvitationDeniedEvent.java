@@ -5,17 +5,20 @@ import fr.jamailun.quickparty.api.parties.PartyInvitation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Event sent when a {@link PartyInvitation} has been denied by a player.
+ */
 @RequiredArgsConstructor
 @Getter
-public class PartyInvitationDeniedEvent extends Event {
+public class PartyInvitationDeniedEvent extends PartyEvent {
 
-    private final PartyInvitation invitation;
-    private final Player player;
+    private final @NotNull PartyInvitation invitation;
+    private final @NotNull Player player;
 
+    @Override
     public @NotNull Party getParty() {
         return invitation.getParty();
     }
