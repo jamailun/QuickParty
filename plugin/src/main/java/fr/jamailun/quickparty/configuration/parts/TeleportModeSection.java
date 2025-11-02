@@ -1,17 +1,22 @@
 package fr.jamailun.quickparty.configuration.parts;
 
+import fr.jamailun.quickparty.api.cost.PlayerCost;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public record TeleportModeSection(
-        @Nullable Boolean enabled,
-        @Nullable String permission,
-        @Nullable Boolean needConfirmation,
-        @Nullable Double teleportWaitSecs,
-        @Nullable CostSection cost
+        Boolean enabled,
+        String permission,
+        Boolean needConfirmation,
+        Double teleportWaitSecs,
+        CostSection cost
 ) {
+
+    public boolean disabled() {
+        return ! Objects.requireNonNullElse(enabled, false);
+    }
 
     static @NotNull TeleportModeSection empty() {
         return new TeleportModeSection(null, null, null, null, null);
@@ -26,6 +31,10 @@ public record TeleportModeSection(
                 teleportWaitSecs != null ? teleportWaitSecs : Objects.requireNonNullElse(bv.teleportWaitSecs, 1d),
                 cost != null ? cost : bv.cost
         );
+    }
+
+    public @Nullable PlayerCost getCost() {
+        return cost == null ? null : cost.deserialize();
     }
 
 }

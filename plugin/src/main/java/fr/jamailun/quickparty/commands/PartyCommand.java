@@ -1,11 +1,11 @@
 package fr.jamailun.quickparty.commands;
 
 import fr.jamailun.quickparty.api.QuickParty;
-import fr.jamailun.quickparty.api.parties.Party;
-import fr.jamailun.quickparty.api.parties.PartyInvitation;
-import fr.jamailun.quickparty.api.parties.PartyInvitationResult;
-import fr.jamailun.quickparty.api.parties.PartyMember;
+import fr.jamailun.quickparty.api.cost.PlayerCost;
+import fr.jamailun.quickparty.api.events.PartyPreTeleportEvent;
+import fr.jamailun.quickparty.api.parties.*;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
+import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.*;
@@ -19,6 +19,8 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
     private static final String[] ARGS_INVITED = new String[] {"accept", "refuse"};
     private static final List<String> ARGS_WITHOUT_PARTY = List.of("invite");
+    private static final String ARG_TP_ALL = "tpall";
+    private static final String ARG_TP = "tp";
     private static final List<String> ARGS_WITH_PARTY = listOf(ARGS_WITHOUT_PARTY, "info", "leave");
     private static final List<String> ARGS_PARTY_LEADER = listOf(ARGS_WITH_PARTY, "kick", "disband", "promote");
 
@@ -114,6 +116,33 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         if("leave".equalsIgnoreCase(args[0])) {
             party.leave(player.getUniqueId());
             return true;
+        }
+
+        if(ARG_TP_ALL.equalsIgnoreCase(args[0])) {
+            if(!member.isPartyLeader())
+                return error(sender, i18n("only-leader.tpall"));
+
+            TeleportModeSection config = QuickPartyConfig.getInstance().getTeleportRules(TeleportMode.ALL_TO_LEADER);
+            if(config.disabled())
+                return error(sender, i18n("teleport.disabled"));
+            PlayerCost cost = config.getCost();
+            if(cost != null && !cost.canPay(player))
+                return error(sender, i18n("teleport.cannot-pay"));
+
+            int count = 0;
+            for(PartyMember other : party.getMembers()) {
+                if(other.equals(member) || other.isOnline()) continue;
+                PartyPreTeleportEvent event = new PartyPreTeleportEvent(party, other.getOnlinePlayer(), player, TeleportMode.ALL_TO_LEADER);
+                Bukkit.getPluginManager().callEvent(event);
+                if(!event.isCancelled()) {
+                    other.sendTeleportRequest(player, TeleportMode.ALL_TO_LEADER);
+                    count++;
+                }
+            }
+
+            if(count > 0)
+                return success(sender, i18n("teleport.success.tpall").replace("%count", String.valueOf(count)));
+            return error(sender, i18n("teleport.no-members-tpall"));
         }
 
         if(args.length < 2)

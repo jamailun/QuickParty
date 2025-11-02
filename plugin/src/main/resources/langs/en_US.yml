@@ -34,6 +34,7 @@ players:
     disband: "Only the party leader can disband the party!"
     kick: "Only the party leader can kick a member!"
     promote: "Only the party leader can promote party member!"
+    tpall: "Only the party leader can teleport members to his position !"
   leave: "You left the party."
   disbanded: "Party successfully disbanded."
   promote-self: "You want to promote yourself ?"
@@ -42,6 +43,12 @@ players:
   kick-success: "Successfully kicked &c%player&r from the party."
   kick-info: "You have been kicked from the party."
   unknown: "Unexpected argument. Expected one of %args."
+  teleport:
+    disabled: "Group-teleportation feature has been disabled."
+    success:
+      tpall: "A group-teleportation offer has been sent to&e %count&r member(s)."
+    no-members-tpall: "No member could receive the group-teleportation request."
+
 admin:
   reloaded: "Configuration reloaded."
   unknown: "Unexpected argument. Expected one of %args."

@@ -34,6 +34,7 @@ players:
     disband: "Seul le chef de groupe peut dissoudre ce dernier !"
     kick: "Seul le chef de groupe peut expulser un membre"
     promote: "Seul le chef de groupe peut promouvoir un membre !"
+    tpall: "Seul le chef de groupe peut téléporter les membres à sa position !"
   leave: "Groupe quitté"
   disbanded: "Le groupe a été dissout."
   promote-self: "Vous êtes déjà le chef du groupe."
@@ -42,6 +43,12 @@ players:
   kick-success: "Le joueur &c%player&r a été expulsé du groupe."
   kick-info: "Tu as été expulsé du groupe."
   unknown: "Argument inconnu. Arguments attendus: %args."
+  teleport:
+    disabled: "La fonction de téléportation de groupe a été désactivée."
+    success:
+      tpall: "Une proposition de téléportation de groupe a été envoyée à&e %count&r membre(s)."
+    no-members-tpall: "Aucun membre n'a pu recevoir de proposition de téléportation de groupe."
+
 
 admin:
   reloaded: "Configuration rechargée."

@@ -3,6 +3,7 @@ package fr.jamailun.quickparty.parties;
 import fr.jamailun.quickparty.QuickPartyLogger;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyMember;
+import fr.jamailun.quickparty.api.parties.TeleportMode;
 import fr.jamailun.quickparty.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
@@ -56,4 +57,8 @@ public class PartyMemberImpl implements PartyMember {
                 .ifPresent(p -> p.sendMessage(StringUtils.parseString(message)));
     }
 
+    @Override
+    public void sendTeleportRequest(@NotNull Player destination, @NotNull TeleportMode mode) {
+        //TODO
+    }
 }

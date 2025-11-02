@@ -13,9 +13,17 @@ public interface PartyMember {
 
     /**
      * Check if the member is online.
-     * @return true if {@link #getOnlinePlayer()} will return a non-null value.
+     * @return {@code true} if {@link #getOnlinePlayer()} will return a non-null value.
      */
     boolean isOnline();
+
+    /**
+     * Check if the member is not online.
+     * @return {@code true} if {@link #getOnlinePlayer()} will return {@code null}.
+     */
+    default boolean isOffline() {
+        return !isOnline();
+    }
 
     /**
      * Get the offline player instance.
@@ -59,4 +67,10 @@ public interface PartyMember {
      */
     void refreshOnline();
 
+    /**
+     * Send a teleport request.
+     * @param destination destination player.
+     * @param mode mode of teleportation
+     */
+    void sendTeleportRequest(@NotNull Player destination, @NotNull TeleportMode mode);
 }
