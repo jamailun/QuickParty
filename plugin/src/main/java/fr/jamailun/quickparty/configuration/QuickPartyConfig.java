@@ -22,6 +22,7 @@ import java.io.File;
 import java.nio.file.StandardCopyOption;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Plugin configuration file read.
@@ -42,7 +43,9 @@ public class QuickPartyConfig {
 
     // Translations
     private final Map<String, String> i18n = new HashMap<>();
-    private final List<String> messageI18n = new ArrayList<>();
+    private final List<String> messageInvitation = new ArrayList<>();
+    private final List<String> messageTp = new ArrayList<>();
+    private final List<String> messageTpAll = new ArrayList<>();
 
     public QuickPartyConfig(@NotNull Plugin plugin) {
         dataFolder = plugin.getDataFolder();
@@ -56,11 +59,16 @@ public class QuickPartyConfig {
         reload();
     }
 
+    /**
+     * Reload config entries and I18n.
+     */
     public void reload() {
         // Clear
         datetimeFormat = null;
         i18n.clear();
-        messageI18n.clear();
+        messageInvitation.clear();
+        messageTp.clear();
+        messageTpAll.clear();
 
         // Reload
         config = store.load(file.toPath());
@@ -94,30 +102,15 @@ public class QuickPartyConfig {
         Configuration langConfig = YamlConfiguration.loadConfiguration(file);
         for(String key : langConfig.getKeys(true)) {
             if("players.invitation.message".equalsIgnoreCase(key)) {
-                messageI18n.addAll(langConfig.getStringList(key));
+                messageInvitation.addAll(langConfig.getStringList(key));
+            } else if("players.teleport.messages.tp".equalsIgnoreCase(key)) {
+                messageTp.addAll(langConfig.getStringList(key));
+            } else if("players.teleport.messages.tpall".equalsIgnoreCase(key)) {
+                messageTpAll.addAll(langConfig.getStringList(key));
             } else {
                 i18n.put(key, langConfig.getString(key));
             }
         }
-    }
-
-    private static @NotNull BaseComponent @NotNull [] prepareComplexMessage(@NotNull String raw) {
-        List<String> parts = StringUtils.splitWithDelimiters(raw, "%CMD_ACCEPT", "%CMD_REFUSE");
-        List<BaseComponent> components = new ArrayList<>();
-        for(String part : parts) {
-            TextComponent text;
-            if("%CMD_ACCEPT".equals(part)) {
-                text = new TextComponent("§a/p accept");
-                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
-            } else if("%CMD_REFUSE".equals(part)) {
-                text = new TextComponent("§c/p refuse");
-                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse"));
-            } else {
-                text = new TextComponent(StringUtils.parseString(part));
-            }
-            components.add(text);
-        }
-        return components.toArray(new BaseComponent[0]);
     }
 
     public static @NotNull String getI18n(@NotNull String key) {
@@ -144,14 +137,13 @@ public class QuickPartyConfig {
         return datetimeFormat;
     }
 
-    public void sendMessageTo(@NotNull Player inviter, @NotNull CommandSender target) {
-        for(String line : messageI18n) {
-            // Replace
-            String replaced = line.replace("%player", inviter.getName());
-            // Transform
-            BaseComponent[] components = prepareComplexMessage(replaced);
-            target.spigot().sendMessage(components);
-        }
+    public void sendInvitationMessageTo(@NotNull Player inviter, @NotNull CommandSender target) {
+        sendComplexMessage(target, messageInvitation, l -> l.replace("%player", inviter.getName()));
+    }
+
+    public void sendTpRequest(@NotNull Player other, @NotNull CommandSender target, @NotNull TeleportMode mode) {
+        var message = mode == TeleportMode.ALL_TO_LEADER ? messageTpAll : messageTp;
+        sendComplexMessage(target, message, l -> l.replace("%player", other.getName()));
     }
 
     private void extractLangFiles(@NotNull File outDir) {
@@ -182,8 +174,38 @@ public class QuickPartyConfig {
         return config.getPlaceholders().suffix().get(isLeader, isSelf, isOnline);
     }
 
-
     public @NotNull TeleportModeSection getTeleportRules(@NotNull TeleportMode mode) {
         return config.getTeleportation().completeFor(mode);
     }
+
+    private static void sendComplexMessage(@NotNull CommandSender target, @NotNull List<String> message, Function<String, String> messageTransformation) {
+        for(String line : message) {
+            // Replace
+            String replaced =  messageTransformation.apply(line);
+
+            // Transform
+            BaseComponent[] components = prepareComplexMessage(replaced);
+            target.spigot().sendMessage(components);
+        }
+    }
+
+    private static @NotNull BaseComponent @NotNull [] prepareComplexMessage(@NotNull String raw) {
+        List<String> parts = StringUtils.splitWithDelimiters(raw, "%CMD_ACCEPT", "%CMD_REFUSE");
+        List<BaseComponent> components = new ArrayList<>();
+        for(String part : parts) {
+            TextComponent text;
+            if("%CMD_ACCEPT".equals(part)) {
+                text = new TextComponent("§a/p accept");
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
+            } else if("%CMD_REFUSE".equals(part)) {
+                text = new TextComponent("§c/p refuse");
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse"));
+            } else {
+                text = new TextComponent(StringUtils.parseString(part));
+            }
+            components.add(text);
+        }
+        return components.toArray(new BaseComponent[0]);
+    }
+
 }

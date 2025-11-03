@@ -45,7 +45,7 @@ public class PartiesManagerImpl implements PartiesManager {
             }
             party.invite(playerTo);
             //
-            QuickPartyConfig.getInstance().sendMessageTo(playerFrom, playerTo);
+            QuickPartyConfig.getInstance().sendInvitationMessageTo(playerFrom, playerTo);
             playerTo.playSound(playerTo, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.3f);
             String message = QuickPartyConfig.getI18n("players.invitation.message-alert")
                     .replace("%player_from", playerFrom.getName())
@@ -65,7 +65,7 @@ public class PartiesManagerImpl implements PartiesManager {
         newParty.invite(playerTo);
 
         // Message
-        QuickPartyConfig.getInstance().sendMessageTo(playerFrom, playerTo);
+        QuickPartyConfig.getInstance().sendInvitationMessageTo(playerFrom, playerTo);
         playerTo.playSound(playerTo, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1.3f);
 
         return PartyInvitationState.PARTY_CREATED.asSuccess(newParty);
