@@ -2,7 +2,7 @@ package fr.jamailun.quickparty.expansions;
 
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.parties.Party;
-import fr.jamailun.quickparty.api.parties.PartyInvitation;
+import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.PartyMember;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +43,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
             switch (partyNumExt.group(1)) {
                 case "member" -> {
                     if(index < party.getMembers().size())
-                        return getMember(party, index).getOfflinePlayer().getName();
+                        return getMember(party, index).getName();
                 }
                 case "is_leader" -> {
                     if(index < party.getMembers().size())
@@ -66,7 +66,7 @@ public class QuickPartyPlaceholderExpansion extends PlaceholderExpansion {
                     boolean isOnline = member.isOnline();
                     String prefix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getPrefix(isLeader, isSelf, isOnline));
                     String suffix = parse(member.getOfflinePlayer(), QuickPartyConfig.getInstance().getSuffix(isLeader, isSelf, isOnline));
-                    return prefix + member.getOfflinePlayer().getName() + suffix;
+                    return prefix + member.getName() + suffix;
                 }
             }
             return "&cOutOfBound";

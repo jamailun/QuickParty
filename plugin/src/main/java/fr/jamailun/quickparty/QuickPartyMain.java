@@ -31,6 +31,7 @@ public final class QuickPartyMain extends JavaPlugin implements QuickPartyPlugin
     public void onLoad() {
         QuickParty.setPlugin(this);
         QuickPartyLogger.initialize(this);
+        QuickPartyScheduler.initialize(this);
         costsRegistry.registerBasics();
     }
 

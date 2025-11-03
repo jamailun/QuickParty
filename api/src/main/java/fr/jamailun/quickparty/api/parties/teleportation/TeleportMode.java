@@ -1,4 +1,4 @@
-package fr.jamailun.quickparty.api.parties;
+package fr.jamailun.quickparty.api.parties.teleportation;
 
 /**
  * Modes of teleport.

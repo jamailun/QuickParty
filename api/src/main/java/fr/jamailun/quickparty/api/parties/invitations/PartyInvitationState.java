@@ -1,6 +1,7 @@
-package fr.jamailun.quickparty.api.parties;
+package fr.jamailun.quickparty.api.parties.invitations;
 
 import com.google.common.base.Preconditions;
+import fr.jamailun.quickparty.api.parties.Party;
 import lombok.Getter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;

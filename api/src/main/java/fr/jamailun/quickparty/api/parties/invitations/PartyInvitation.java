@@ -1,5 +1,6 @@
-package fr.jamailun.quickparty.api.parties;
+package fr.jamailun.quickparty.api.parties.invitations;
 
+import fr.jamailun.quickparty.api.parties.Party;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 

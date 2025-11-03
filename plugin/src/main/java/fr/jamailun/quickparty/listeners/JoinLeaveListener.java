@@ -17,7 +17,7 @@ public class JoinLeaveListener extends QpListener {
     void playerJoin(@NotNull PlayerJoinEvent event) {
         Party party = QuickParty.getPlayerParty(event.getPlayer());
         if(party == null) return;
-        PartyMember member = party.getPartyMember(event.getPlayer().getUniqueId());
+        PartyMember member = party.getPartyMember(event.getPlayer());
         if(member != null) {
             member.refreshOnline();
         }

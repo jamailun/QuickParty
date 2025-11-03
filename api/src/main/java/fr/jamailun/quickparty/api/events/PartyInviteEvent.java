@@ -1,6 +1,7 @@
 package fr.jamailun.quickparty.api.events;
 
 import fr.jamailun.quickparty.api.parties.Party;
+import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.entity.Player;
@@ -8,7 +9,7 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Event sent when a {@link fr.jamailun.quickparty.api.parties.PartyInvitation} has been sent to another player.
+ * Event sent when a {@link PartyInvitation} has been sent to another player.
  */
 @RequiredArgsConstructor
 @Getter

@@ -45,9 +45,23 @@ players:
   unknown: "Argument inconnu. Arguments attendus: %args."
   teleport:
     disabled: "La fonction de téléportation de groupe a été désactivée."
-    success:
-      tpall: "Une proposition de téléportation de groupe a été envoyée à&e %count&r membre(s)."
+    send-success: "Une demande de téléportation a été envoyée à&e %player&r."
+    send-success-tpall: "Une proposition de téléportation de groupe a été envoyée à&e %count&r membre(s)."
     no-members-tpall: "Aucun membre n'a pu recevoir de proposition de téléportation de groupe."
+    success: "Vous avez été téléporté à&e %player&r."
+    success-other: "Le joueur&e %player&r s'est téléporté à vous."
+    success-tpall: "Le joueur %player&r s'est téléporté à vous avec succès."
+    cancelled: "La requête de téléportation sur &e%player&r a été refusée."
+    cancelled-group: "La proposition de téléportation de groupe a été annulée."
+    cancelled-tpall: "La proposition de téléportation de groupe a été refusée par &e%player&r."
+    impossible: "La téléportation est impossible..."
+    accepted: "Requête de téléportation acceptée."
+    accepted-tpall: "Le joueur &e%player&r a accepté la téléportation de groupe."
+    expired: "La requête de téléportation sur &e%player&r a expirée."
+    expired-group: "La proposition de téléportation de groupe a expirée."
+    expired-tpall: "La proposition de téléportation de groupe de &e%player&r a expirée."
+    abandoned: "En faisant cette demande de téléportation, vous avez abandonné celle vers &e%player&r."
+    abandoned-tpall: "En faisant cette demande de téléportation, vous avez abandonné la proposition de téléportation de groupe."
     messages:
       tpall:
         - "&e---------------------------------------"

@@ -1,7 +1,7 @@
 package fr.jamailun.quickparty.api.events;
 
 import fr.jamailun.quickparty.api.parties.Party;
-import fr.jamailun.quickparty.api.parties.TeleportMode;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

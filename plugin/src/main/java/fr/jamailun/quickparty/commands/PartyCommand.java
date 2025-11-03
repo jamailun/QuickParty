@@ -4,6 +4,9 @@ import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.cost.PlayerCost;
 import fr.jamailun.quickparty.api.events.PartyPreTeleportEvent;
 import fr.jamailun.quickparty.api.parties.*;
+import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
+import fr.jamailun.quickparty.api.parties.invitations.PartyInvitationResult;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
 import org.bukkit.Bukkit;
@@ -73,7 +76,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         if(party == null) {
             return info(player, i18n("no-party"));
         }
-        PartyMember member = Objects.requireNonNull(party.getPartyMember(player.getUniqueId()), "Could not get role in party...");
+        PartyMember member = Objects.requireNonNull(party.getPartyMember(player), "Could not get role in party...");
 
         if("info".equalsIgnoreCase(args[0])) {
             String date = QuickPartyConfig.getInstance().getDatetimeFormat().format(party.getCreationDate());
@@ -83,7 +86,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             info(player, i18n("infos.members").replace("%size", ""+members.size()));
             for(PartyMember m : members) {
                 String color = m.isPartyLeader() ? i18n("infos.member.color.leader") : i18n("infos.member.color.member");
-                String name = (m.isPartyLeader() ? "&6" : "&a") + m.getOfflinePlayer().getName();
+                String name = (m.isPartyLeader() ? "&6" : "&a") + m.getName();
                 String self = m.getUUID().equals(player.getUniqueId()) ?  i18n("infos.member.self") : "";
                 info(player,
                         i18n("infos.member.line")
@@ -141,7 +144,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             }
 
             if(count > 0)
-                return success(sender, i18n("teleport.success.tpall").replace("%count", String.valueOf(count)));
+                return success(sender, i18n("teleport.send-success.tpall").replace("%count", String.valueOf(count)));
             return error(sender, i18n("teleport.no-members-tpall"));
         }
 
@@ -221,7 +224,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
         Party party = QuickParty.getPlayerParty(player);
         if(party == null) return listOf(ARGS_WITHOUT_PARTY, bonusInvited);
-        PartyMember member = party.getPartyMember(player.getUniqueId());
+        PartyMember member = party.getPartyMember(player);
         return listOf((member != null && member.isPartyLeader()) ? ARGS_PARTY_LEADER : ARGS_WITH_PARTY, bonusInvited);
     }
 

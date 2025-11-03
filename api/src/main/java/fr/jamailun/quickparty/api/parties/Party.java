@@ -1,5 +1,8 @@
 package fr.jamailun.quickparty.api.parties;
 
+import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportRequest;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +34,13 @@ public interface Party {
     Collection<PartyInvitation> getPendingInvitations();
 
     /**
+     * Get all pending teleport requests.
+     * @return a non-null view of {@link TeleportRequest TeleportRequests}.
+     */
+    @NotNull @UnmodifiableView
+    Collection<TeleportRequest> getPendingTeleportRequests();
+
+    /**
      * Get the <b>total</b> pending size.
      * @return the sum of the players and invitations counts.
      */
@@ -44,6 +54,13 @@ public interface Party {
      * @return {@code null} if the UUID does not match any member.
      */
     @Nullable PartyMember getPartyMember(@NotNull UUID uuid);
+
+    /**
+     * Get a party-member
+     * @param player player to get.
+     * @return {@code null} if the player is not in the party.
+     */
+    @Nullable PartyMember getPartyMember(@NotNull OfflinePlayer player);
 
     /**
      * Get the party leader.
@@ -69,6 +86,14 @@ public interface Party {
      * @param player player to invite.
      */
     void invite(@NotNull Player player);
+
+    /**
+     * Make a new teleportation request.
+     * @param player player to teleport.
+     * @param destination player to teleport the other one.
+     * @param mode mode of teleportation.
+     */
+    void newTeleportRequest(@NotNull Player player, @NotNull Player destination, @NotNull TeleportMode mode);
 
     /**
      * Cancel a pending invitation.

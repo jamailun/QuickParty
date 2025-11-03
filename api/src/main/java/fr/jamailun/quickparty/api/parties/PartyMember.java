@@ -1,6 +1,8 @@
 package fr.jamailun.quickparty.api.parties;
 
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,6 +41,12 @@ public interface PartyMember {
     Player getOnlinePlayer();
 
     /**
+     * Get player username.
+     * @return non-null username.
+     */
+    @NotNull String getName();
+
+    /**
      * Get the UUID of the member.
      * @return a non-null UUID. Cannot change for one instance.
      */
@@ -61,6 +69,13 @@ public interface PartyMember {
      * @param message the message.
      */
     void sendMessage(@NotNull String message);
+
+    /**
+     * Play a sound to the player, if he's online.
+     * @param sound the sound to play.
+     * @param pitch pitch to use.
+     */
+    void playSound(@NotNull Sound sound, float pitch);
 
     /**
      * Try to refresh the online-player after a reconnect.

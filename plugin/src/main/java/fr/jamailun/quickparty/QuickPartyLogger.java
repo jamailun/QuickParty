@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
-public class QuickPartyLogger {
+public final class QuickPartyLogger {
 
     private final static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("[HH:mm:ss]");
 

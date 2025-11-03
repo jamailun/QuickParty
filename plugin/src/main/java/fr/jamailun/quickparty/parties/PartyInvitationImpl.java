@@ -1,7 +1,7 @@
 package fr.jamailun.quickparty.parties;
 
 import fr.jamailun.quickparty.api.parties.Party;
-import fr.jamailun.quickparty.api.parties.PartyInvitation;
+import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.OfflinePlayer;

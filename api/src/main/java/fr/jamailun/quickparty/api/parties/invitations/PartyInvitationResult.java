@@ -1,5 +1,6 @@
-package fr.jamailun.quickparty.api.parties;
+package fr.jamailun.quickparty.api.parties.invitations;
 
+import fr.jamailun.quickparty.api.parties.Party;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

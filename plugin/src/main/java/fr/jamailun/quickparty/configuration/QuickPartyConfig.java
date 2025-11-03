@@ -3,7 +3,7 @@ package fr.jamailun.quickparty.configuration;
 import de.exlll.configlib.YamlConfigurationProperties;
 import de.exlll.configlib.YamlConfigurationStore;
 import fr.jamailun.quickparty.QuickPartyLogger;
-import fr.jamailun.quickparty.api.parties.TeleportMode;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
 import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
 import fr.jamailun.quickparty.utils.JarReader;
 import fr.jamailun.quickparty.utils.StringUtils;
@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
@@ -176,6 +177,13 @@ public class QuickPartyConfig {
 
     public @NotNull TeleportModeSection getTeleportRules(@NotNull TeleportMode mode) {
         return config.getTeleportation().completeFor(mode);
+    }
+
+    public @NotNull Duration getTeleportRequestExpiration() {
+        double seconds = config.getTeleportation().requestExpirationSeconds();
+        if(seconds <= 0)
+            return Duration.ofDays(7);
+        return Duration.ofMillis((long) (seconds * 1000));
     }
 
     private static void sendComplexMessage(@NotNull CommandSender target, @NotNull List<String> message, Function<String, String> messageTransformation) {

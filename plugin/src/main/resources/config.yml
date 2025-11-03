@@ -18,6 +18,10 @@ format:
 
 # Teleport rules and costs
 teleportation:
+  # Duration (in seconds) before a teleport request expires.
+  # Remember, in the 'ALL_TO_LEADER' case, the leader pre-pays teleportation. Don't make it
+  # too short to not anger the players ! :)
+  requestExpirationSecs: 30
   # Default config. Each mode will be able to override every property.
   default:
     enabled: true

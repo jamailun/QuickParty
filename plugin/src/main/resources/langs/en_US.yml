@@ -45,9 +45,23 @@ players:
   unknown: "Unexpected argument. Expected one of %args."
   teleport:
     disabled: "Group-teleportation feature has been disabled."
-    success:
-      tpall: "A group-teleportation offer has been sent to&e %count&r member(s)."
-    no-members-tpall: "No member could receive the group-teleportation request."
+    send-success: "Teleportation request sent to&e %player&r."
+    send-success-tpall: "A group-teleportation offer has been sent to&e %count&r member(s)."
+    no-members-tpall: "No member could receive the group-teleportation offer."
+    success: "You have been teleported to&e %player&r."
+    success-other: "Player&e %player&r teleported to you."
+    success-tpall: "Member %player&r successfully teleported to you."
+    cancelled: "Teleportation request to &e%player&r has been refused."
+    cancelled-group: "Group teleportation offer cancelled."
+    cancelled-tpall: "Member &e%player&r refused your group teleportation."
+    impossible: "Teleportation is not possible..."
+    accepted: "Teleportation request accepted."
+    accepted-tpall: "Member &e%player&r accepted the teleportation offer."
+    expired: "Teleportation request to &e%player&r expired."
+    expired-group: "Group teleportation offer expired."
+    expired-tpall: "&6%player&r group teleportation offer expired."
+    abandoned: "By making this teleportation request, you abandoned the one to &e%player&r."
+    abandoned-tpall: "By making this teleportation request, you abandoned the party-teleportation offer.."
     messages:
       tpall:
         - "&e---------------------------------------"

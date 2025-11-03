@@ -3,12 +3,9 @@ package fr.jamailun.quickparty.configuration;
 import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
 import fr.jamailun.quickparty.QuickPartyLogger;
-import fr.jamailun.quickparty.api.parties.TeleportMode;
-import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
 import fr.jamailun.quickparty.configuration.parts.TeleportationSection;
 import lombok.Getter;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -116,7 +113,7 @@ public class MainConfiguration {
         format = format.asValid();
 
         // Teleportation
-        if(teleportation == null) teleportation = new TeleportationSection(null, null);
+        if(teleportation == null) teleportation = new TeleportationSection(null,null, null);
         teleportation = teleportation.asValid();
 
         // Placeholders
