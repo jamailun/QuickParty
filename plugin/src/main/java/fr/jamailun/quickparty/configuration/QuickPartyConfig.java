@@ -144,9 +144,17 @@ public class QuickPartyConfig {
         sendComplexMessage(target, messageInvitation, l -> l.replace("%player", inviter.getName()));
     }
 
-    public void sendTpRequest(@NotNull Player other, @NotNull CommandSender target, @NotNull TeleportMode mode) {
-        var message = mode == TeleportMode.ALL_TO_LEADER ? messageTpAll : messageTp;
-        sendComplexMessage(target, message, l -> l.replace("%player", other.getName()));
+    /**
+     * Send a TP request.
+     * @param player player to teleport.
+     * @param destination player to teleport to.
+     * @param mode teleport mode.
+     */
+    public void sendTpRequest(@NotNull Player player, @NotNull Player destination, @NotNull TeleportMode mode) {
+        var message = (mode == TeleportMode.ALL_TO_LEADER) ? messageTpAll : messageTp;
+        CommandSender msgTarget = (mode == TeleportMode.ALL_TO_LEADER) ? player : destination;
+        String otherPlayer = ((mode == TeleportMode.ALL_TO_LEADER) ? destination : player).getName();
+        sendComplexMessage(msgTarget, message, l -> l.replace("%player", otherPlayer));
     }
 
     private void extractLangFiles(@NotNull File outDir) {

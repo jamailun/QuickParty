@@ -208,7 +208,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
             // Send request
             member.sendTeleportRequest(other, mode);
-            return success(sender, i18n("teleport.send-success"));
+            return success(sender, i18n("teleport.send-success").replace("%player", other.getName()));
         }
 
         return error(sender, i18n("unexpected").replace("%args", getFirstArgs(player).toString()));

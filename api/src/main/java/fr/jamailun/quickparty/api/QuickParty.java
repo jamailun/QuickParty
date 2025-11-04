@@ -1,8 +1,8 @@
 package fr.jamailun.quickparty.api;
 
-import com.google.common.base.Preconditions;
 import fr.jamailun.quickparty.api.parties.PartiesManager;
 import fr.jamailun.quickparty.api.parties.Party;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,8 @@ public final class QuickParty {
 
     @ApiStatus.Internal
     public static void setPlugin(QuickPartyPlugin plugin) {
-        Preconditions.checkState(QuickParty.plugin == null, "Cannot set the QuickParty plugin : has already been set.");
+        if(QuickParty.plugin != null)
+            Bukkit.getConsoleSender().sendMessage("§cQuickParty plugin has been overloaded by " + plugin);
         QuickParty.plugin = plugin;
     }
 

@@ -109,7 +109,7 @@ public class PartyImpl implements Party {
         QuickPartyScheduler.runLaterAsync(request::expired, QuickPartyConfig.getInstance().getTeleportRequestExpiration());
 
         // Message and sound
-        QuickPartyConfig.getInstance().sendTpRequest(destination, player, mode);
+        QuickPartyConfig.getInstance().sendTpRequest(player, destination, mode);
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_COW_BELL, 1f, 1.05f);
     }
 
