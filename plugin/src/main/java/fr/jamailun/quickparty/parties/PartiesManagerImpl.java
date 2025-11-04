@@ -6,6 +6,7 @@ import fr.jamailun.quickparty.api.parties.*;
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitationResult;
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitationState;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportRequest;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -82,6 +83,13 @@ public class PartiesManagerImpl implements PartiesManager {
     @Override
     public PartyInvitation getInvitationFor(@NotNull OfflinePlayer player) {
         return invitations.get(player.getUniqueId());
+    }
+
+    @Override
+    public TeleportRequest getTeleportRequestFor(@NotNull OfflinePlayer player) {
+        Party party = getPlayerParty(player);
+        if(party == null) return null;
+        return party.getTeleportRequestOf(player);
     }
 
     void playerQuit(@NotNull UUID uuid) {

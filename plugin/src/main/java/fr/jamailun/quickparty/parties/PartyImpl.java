@@ -114,6 +114,11 @@ public class PartyImpl implements Party {
     }
 
     @Override
+    public @Nullable TeleportRequest getTeleportRequestOf(@NotNull OfflinePlayer player) {
+        return pendingTpRequests.get(player.getUniqueId());
+    }
+
+    @Override
     public void cancelInvitation(@NotNull UUID uuid) {
         pendingInvitations.remove(uuid);
         manager.invitations.remove(uuid);

@@ -44,10 +44,15 @@ players:
   kick-info: "You have been kicked from the party."
   unknown: "Unexpected argument. Expected one of %args."
   teleport:
-    disabled: "Group-teleportation feature has been disabled."
+    mode-disabled:
+      all-to-leader: "Group-teleportation feature has been disabled."
+      leader-to-member: "Group-teleportation feature has been disabled."
+      member-to-leader: "Group-teleportation feature has been disabled."
+      member-to-member: "Group-teleportation feature has been disabled."
     send-success: "Teleportation request sent to&e %player&r."
     send-success-tpall: "A group-teleportation offer has been sent to&e %count&r member(s)."
     no-members-tpall: "No member could receive the group-teleportation offer."
+    not-in-party: "Cannot teleport to this player : he is not in your group."
     success: "You have been teleported to&e %player&r."
     success-other: "Player&e %player&r teleported to you."
     success-tpall: "Member %player&r successfully teleported to you."

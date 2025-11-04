@@ -4,6 +4,7 @@ import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import fr.jamailun.quickparty.utils.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnmodifiableView;
 
 import java.util.*;
@@ -14,9 +15,10 @@ import java.util.*;
 public abstract class CommandHelper {
 
     @SafeVarargs
-    protected static <T> @NotNull @UnmodifiableView List<T> listOf(@NotNull List<T> list, @NotNull T @NotNull ... elements) {
+    protected static <T> @NotNull @UnmodifiableView List<T> listOf(@NotNull List<T> list, @Nullable T @NotNull ... elements) {
         List<T> copy = new ArrayList<>(list);
-        copy.addAll(List.of(elements));
+        for(T t : elements)
+            if(t != null) copy.add(t);
         return Collections.unmodifiableList(copy);
     }
 

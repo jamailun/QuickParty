@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public record TeleportationSection(
     @Comment({"Duration (in seconds) before a teleport request expires.",
@@ -31,5 +33,12 @@ public record TeleportationSection(
                 defaultMode == null ? TeleportModeSection.empty() : defaultMode,
                 modes == null ? new HashMap<>() : modes
         );
+    }
+
+    public @NotNull Set<TeleportMode> getEnabledModes() {
+        return modes.entrySet().stream()
+                .filter(e -> e.getValue().enabled())
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toSet());
     }
 }

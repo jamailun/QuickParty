@@ -39,6 +39,7 @@ public class QuickPartyConfig {
 
     private static final DateTimeFormatter DEFAULT_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
     private DateTimeFormatter datetimeFormat;
+    private Set<TeleportMode> cachedTeleportMode;
 
     @Getter public static boolean isDebug = false;
 
@@ -70,6 +71,7 @@ public class QuickPartyConfig {
         messageInvitation.clear();
         messageTp.clear();
         messageTpAll.clear();
+        cachedTeleportMode = null;
 
         // Reload
         config = store.load(file.toPath());
@@ -177,6 +179,13 @@ public class QuickPartyConfig {
 
     public @NotNull TeleportModeSection getTeleportRules(@NotNull TeleportMode mode) {
         return config.getTeleportation().completeFor(mode);
+    }
+
+    public @NotNull Set<TeleportMode> getEnabledTeleportModes() {
+        if(cachedTeleportMode == null) {
+            cachedTeleportMode = config.getTeleportation().getEnabledModes();
+        }
+        return cachedTeleportMode;
     }
 
     public @NotNull Duration getTeleportRequestExpiration() {

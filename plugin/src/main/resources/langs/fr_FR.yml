@@ -44,10 +44,15 @@ players:
   kick-info: "Tu as été expulsé du groupe."
   unknown: "Argument inconnu. Arguments attendus: %args."
   teleport:
-    disabled: "La fonction de téléportation de groupe a été désactivée."
+    mode-disabled:
+      all-to-leader: "La fonction de téléportation de groupe a été désactivée."
+      leader-to-member: "La fonction de téléportation de groupe a été désactivée."
+      member-to-leader: "La fonction de téléportation de groupe a été désactivée."
+      member-to-member: "La fonction de téléportation de groupe a été désactivée."
     send-success: "Une demande de téléportation a été envoyée à&e %player&r."
     send-success-tpall: "Une proposition de téléportation de groupe a été envoyée à&e %count&r membre(s)."
     no-members-tpall: "Aucun membre n'a pu recevoir de proposition de téléportation de groupe."
+    not-in-party: "Impossible de se téléporter à ce joueur : il n'est pas dans votre groupe."
     success: "Vous avez été téléporté à&e %player&r."
     success-other: "Le joueur&e %player&r s'est téléporté à vous."
     success-tpall: "Le joueur %player&r s'est téléporté à vous avec succès."

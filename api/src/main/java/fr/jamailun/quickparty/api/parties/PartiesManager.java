@@ -2,6 +2,7 @@ package fr.jamailun.quickparty.api.parties;
 
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitationResult;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportRequest;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,7 @@ public interface PartiesManager {
      * @param player the player instance.
      * @return {@code null} if the player does not belong to any {@link Party}.
      */
-    default @Nullable Party getPlayerParty(@NotNull Player player) {
+    default @Nullable Party getPlayerParty(@NotNull OfflinePlayer player) {
         return getPlayerParty(player.getUniqueId());
     }
 
@@ -51,8 +52,19 @@ public interface PartiesManager {
      * Test if a pending {@link PartyInvitation} exists for a {@link Player}.
      * @param player the player to test.
      * @return {@code true} if this player has a pending {@link PartyInvitation}.
+     * @see #getInvitationFor(OfflinePlayer)
      */
     boolean hasInvitation(@NotNull OfflinePlayer player);
+
+    /**
+     * Test if a pending {@link TeleportRequest} exists for a {@link Player}.
+     * @param player the player to test.
+     * @return {@code true} if this player has a pending {@link TeleportRequest}.
+     * @see #getTeleportRequestFor(OfflinePlayer)
+     */
+    default boolean hasTeleportRequest(@NotNull OfflinePlayer player) {
+        return getTeleportRequestFor(player) != null;
+    }
 
     /**
      * Get the {@link PartyInvitation} of a {@link Player}.
@@ -60,5 +72,12 @@ public interface PartiesManager {
      * @return {@code null} if this player has no pending {@link PartyInvitation}.
      */
     @Nullable PartyInvitation getInvitationFor(@NotNull OfflinePlayer player);
+
+    /**
+     * Get the {@link TeleportRequest} of a {@link Player}.
+     * @param player the player to test.
+     * @return {@code null} if this player has no pending {@link TeleportRequest}.
+     */
+    @Nullable TeleportRequest getTeleportRequestFor(@NotNull OfflinePlayer player);
 
 }

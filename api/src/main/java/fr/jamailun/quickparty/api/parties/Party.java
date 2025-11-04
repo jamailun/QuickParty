@@ -96,6 +96,13 @@ public interface Party {
     void newTeleportRequest(@NotNull Player player, @NotNull Player destination, @NotNull TeleportMode mode);
 
     /**
+     * Get a player pending {@link TeleportRequest}.
+     * @param player player to get the request of.
+     * @return {@code null} if no request is pending for this player.
+     */
+    @Nullable TeleportRequest getTeleportRequestOf(@NotNull OfflinePlayer player);
+
+    /**
      * Cancel a pending invitation.
      * @param uuid the UUID of the player to cancel the invitation of.
      */

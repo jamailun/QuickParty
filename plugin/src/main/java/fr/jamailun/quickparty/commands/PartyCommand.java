@@ -7,6 +7,7 @@ import fr.jamailun.quickparty.api.parties.*;
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitation;
 import fr.jamailun.quickparty.api.parties.invitations.PartyInvitationResult;
 import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
+import fr.jamailun.quickparty.api.parties.teleportation.TeleportRequest;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import fr.jamailun.quickparty.configuration.parts.TeleportModeSection;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
 
@@ -57,6 +59,14 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         }
 
         if("accept".equalsIgnoreCase(args[0])) {
+            // Teleport ?
+            TeleportRequest request = QuickParty.getPartiesManager().getTeleportRequestFor(player);
+            if(request != null) {
+                request.accept();
+                return true;
+            }
+
+            // Invitation
             PartyInvitation invitation = QuickParty.getPartiesManager().getInvitationFor(player);
             if(invitation == null)
                 return error(player, i18n("invitation.none"));
@@ -65,6 +75,14 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         }
 
         if("refuse".equalsIgnoreCase(args[0])) {
+            // Teleport ?
+            TeleportRequest request = QuickParty.getPartiesManager().getTeleportRequestFor(player);
+            if(request != null) {
+                request.cancel();
+                return true;
+            }
+
+            // Invitation
             PartyInvitation invitation = QuickParty.getPartiesManager().getInvitationFor(player);
             if(invitation == null)
                 return error(player, i18n("invitation.none"));
@@ -127,7 +145,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
             TeleportModeSection config = QuickPartyConfig.getInstance().getTeleportRules(TeleportMode.ALL_TO_LEADER);
             if(config.disabled())
-                return error(sender, i18n("teleport.disabled"));
+                return error(sender, i18n("teleport.mode-disabled.all-to-leader"));
             PlayerCost cost = config.getCost();
             if(cost != null && !cost.canPay(player))
                 return error(sender, i18n("teleport.cannot-pay"));
@@ -171,6 +189,28 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             party.kick(other);
             return true;
         }
+
+        if(ARG_TP.equalsIgnoreCase(args[0])) {
+            PartyMember target = party.getPartyMember(other);
+            if(target == null) return error(sender, i18n("teleport.not-in-party"));
+
+            // Evaluate mode
+            TeleportMode mode = TeleportMode.evaluateWith(member, target);
+            TeleportModeSection config = QuickPartyConfig.getInstance().getTeleportRules(mode);
+            if(config.disabled()) {
+                return switch (mode) {
+                    case ALL_TO_LEADER -> throw new UnsupportedOperationException("Cannot be here.");
+                    case LEADER_TO_MEMBER -> error(sender, i18n("teleport.mode-disabled.leader-to-member"));
+                    case MEMBER_TO_LEADER -> error(sender, i18n("teleport.mode-disabled.member-to-leader"));
+                    case MEMBER_TO_MEMBER -> error(sender, i18n("teleport.mode-disabled.member-to-member"));
+                };
+            }
+
+            // Send request
+            member.sendTeleportRequest(other, mode);
+            return success(sender, i18n("teleport.send-success"));
+        }
+
         return error(sender, i18n("unexpected").replace("%args", getFirstArgs(player).toString()));
     }
 
@@ -214,18 +254,62 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
                         .filter(n -> n.toLowerCase().contains(arg1))
                         .toList();
             }
+            if(ARG_TP.equalsIgnoreCase(args[0])) {
+                Party party = QuickParty.getPlayerParty(player);
+                if(party == null) return Collections.emptyList();
+                PartyMember member = Objects.requireNonNull(party.getPartyMember(player.getUniqueId()));
+                Set<TeleportMode> enabledModes = QuickPartyConfig.getInstance().getEnabledTeleportModes();
+                boolean acceptsLeader = enabledModes.contains(TeleportMode.MEMBER_TO_LEADER);
+                boolean acceptsMember = member.isPartyLeader() && enabledModes.contains(TeleportMode.LEADER_TO_MEMBER);
+                boolean acceptsAll = enabledModes.contains(TeleportMode.MEMBER_TO_MEMBER);
+
+                return party.getMembers().stream()
+                        // Online and not sender
+                        .filter(mem -> !mem.getUUID().equals(player.getUniqueId()) && mem.isOnline())
+                        // Must match flags
+                        .filter(mem -> {
+                            if(mem.isPartyLeader()) return acceptsLeader;
+                            return acceptsMember || acceptsAll;
+                        })
+                        // Map and filter with name
+                        .map(mem -> mem.getOnlinePlayer().getName())
+                        .filter(n -> n.toLowerCase().contains(arg1))
+                        .toList();
+            }
         }
 
         return List.of();
     }
 
-    private List<String> getFirstArgs(Player player) {
-        String[] bonusInvited = QuickParty.getPartiesManager().hasInvitation(player) ? ARGS_INVITED : new String[0];
+    private @NotNull @Unmodifiable List<String> getFirstArgs(@NotNull Player player) {
+        // Add 'refuse' and 'accept' if an invitation/tp-request exists.
+        boolean hasTpRequest = QuickParty.getPartiesManager().hasTeleportRequest(player);
+        boolean hasInvitation = QuickParty.getPartiesManager().hasInvitation(player);
+        String[] bonusInvited = (hasTpRequest || hasInvitation) ? ARGS_INVITED : new String[0];
 
+        // Has party ?
         Party party = QuickParty.getPlayerParty(player);
         if(party == null) return listOf(ARGS_WITHOUT_PARTY, bonusInvited);
-        PartyMember member = party.getPartyMember(player);
-        return listOf((member != null && member.isPartyLeader()) ? ARGS_PARTY_LEADER : ARGS_WITH_PARTY, bonusInvited);
+        PartyMember member = Objects.requireNonNull(party.getPartyMember(player));
+        List<String> baseCommands = listOf(member.isPartyLeader() ? ARGS_PARTY_LEADER : ARGS_WITH_PARTY, bonusInvited);
+
+        // No other player ? Don't check tp args...
+        if(party.getMembers().size() == 1)
+            return baseCommands;
+
+        // Add TP if mode are enabled
+        Set<TeleportMode> enabledModes = QuickPartyConfig.getInstance().getEnabledTeleportModes();
+        boolean canTp = enabledModes.contains(TeleportMode.MEMBER_TO_MEMBER)
+                || (!member.isPartyLeader() && enabledModes.contains(TeleportMode.MEMBER_TO_LEADER))
+                || (member.isPartyLeader() && enabledModes.contains(TeleportMode.LEADER_TO_MEMBER));
+        boolean canTpAll = member.isPartyLeader() && enabledModes.contains(TeleportMode.ALL_TO_LEADER);
+
+        // Concatenate with arguments
+        return listOf(
+                baseCommands,
+                canTp ? ARG_TP : null,
+                canTpAll ? ARG_TP_ALL : null
+        );
     }
 
 }
