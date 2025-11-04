@@ -5,9 +5,7 @@ import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public record TeleportationSection(
@@ -22,16 +20,20 @@ public record TeleportationSection(
 ) {
 
     public @NotNull TeleportModeSection completeFor(@NotNull TeleportMode mode) {
-        TeleportModeSection base = modes.computeIfAbsent(mode, x -> TeleportModeSection.empty());
-        return base.withDefaults(defaultMode);
+        return modes.get(mode).withDefaults(defaultMode);
     }
 
     @Contract(" -> new")
     public @NotNull TeleportationSection asValid() {
+        Map<TeleportMode, TeleportModeSection> modesData =
+                Objects.requireNonNullElseGet(modes, () -> new EnumMap<>(TeleportMode.class));
+        Arrays.stream(TeleportMode.values())
+                .forEach(m -> modesData.putIfAbsent(m, TeleportModeSection.empty()));
+
         return new TeleportationSection(
                 requestExpirationSeconds == null ? 30d : requestExpirationSeconds,
-                defaultMode == null ? TeleportModeSection.empty() : defaultMode,
-                modes == null ? new HashMap<>() : modes
+                defaultMode == null ? TeleportModeSection.defaultValues() : defaultMode,
+                modesData
         );
     }
 

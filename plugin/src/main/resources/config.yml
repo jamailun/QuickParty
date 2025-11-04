@@ -21,7 +21,7 @@ teleportation:
   # Duration (in seconds) before a teleport request expires.
   # Remember, in the 'ALL_TO_LEADER' case, the leader pre-pays teleportation. Don't make it
   # too short to not anger the players ! :)
-  requestExpirationSecs: 30
+  requestExpirationSecs: 30.0
   # Default config. Each mode will be able to override every property.
   default:
     enabled: true
@@ -31,24 +31,20 @@ teleportation:
     # In the case of "ALL_TO_LEADER" call, it will be the members (source) that will have to confirm.
     needConfirmation: true
     # Duration during witch the player must not move before TP
-    teleportWaitSecs: 5
+    teleportWaitSecs: 5.0
     # The cost to pay
-    cost:
-      type: item
-      data:
-        type: EMERALD
-        count: 2
+    costItem:
+      item: emerald
+      count: 2
   modes:
     # The leader makes the call to TP every member to him.
     ALL_TO_LEADER:
       enabled: true
-      permission: some.permission
-      cost:
-        type: item
-        data:
-          type: EMERALD
-          count: 12
-      teleportWaitSecs: 10
+      permission: none
+      costItem:
+        item: emerald
+        count: 10
+      teleportWaitSecs: 10.0
     # Allow the leader to TP to a member.
     LEADER_TO_MEMBER:
       enabled: true
@@ -83,4 +79,4 @@ placeholders:
       self: ' &c%player_health_rounded% ❤'
 
 # Don't change this value manually.
-version: "1.2"
+version: "2.0"

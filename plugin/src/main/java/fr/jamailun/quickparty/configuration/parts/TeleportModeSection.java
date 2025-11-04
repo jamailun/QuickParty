@@ -1,40 +1,44 @@
 package fr.jamailun.quickparty.configuration.parts;
 
 import fr.jamailun.quickparty.api.cost.PlayerCost;
+import fr.jamailun.quickparty.costs.PlayerCostItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 public record TeleportModeSection(
-        Boolean enabled,
+        boolean enabled,
         String permission,
         Boolean needConfirmation,
         Double teleportWaitSecs,
-        CostSection cost
+        // Allowed cost
+        PlayerCostItem costItem
 ) {
 
     public boolean disabled() {
-        return ! Objects.requireNonNullElse(enabled, false);
+        return ! enabled;
     }
 
     static @NotNull TeleportModeSection empty() {
-        return new TeleportModeSection(null, null, null, null, null);
+        return new TeleportModeSection(false, null, null, null, null);
+    }
+    static @NotNull TeleportModeSection defaultValues() {
+        return new TeleportModeSection(false, "none", false, 1d, null);
     }
 
-    public @NotNull TeleportModeSection withDefaults(@Nullable TeleportModeSection defaultValues) {
-        TeleportModeSection bv = Objects.requireNonNullElse(defaultValues, empty());
+    public @NotNull TeleportModeSection withDefaults(@NotNull TeleportModeSection dv) {
         return new TeleportModeSection(
-                enabled != null ? enabled : Objects.requireNonNullElse(bv.enabled, false),
-                permission != null ? permission : Objects.requireNonNullElse(bv.permission, "none"),
-                needConfirmation != null ? needConfirmation : Objects.requireNonNullElse(bv.needConfirmation, false),
-                teleportWaitSecs != null ? teleportWaitSecs : Objects.requireNonNullElse(bv.teleportWaitSecs, 1d),
-                cost != null ? cost : bv.cost
+                enabled,
+                permission != null ? permission : Objects.requireNonNullElse(dv.permission, "none"),
+                needConfirmation != null ? needConfirmation : Objects.requireNonNullElse(dv.needConfirmation, false),
+                teleportWaitSecs != null ? teleportWaitSecs : Objects.requireNonNullElse(dv.teleportWaitSecs, 1d),
+                costItem != null ? costItem : dv.costItem
         );
     }
 
     public @Nullable PlayerCost getCost() {
-        return cost == null ? null : cost.deserialize();
+        //TODO add other costs later.
+        return costItem;
     }
-
 }
