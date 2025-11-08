@@ -154,11 +154,11 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
                 return error(sender, i18n("teleport.mode-disabled.all-to-leader"));
             PlayerCost cost = config.getCost();
             if(cost != null && !cost.canPay(player))
-                return error(sender, i18n("teleport.cannot-pay"));
+                return error(sender, i18n("teleport.cannot-pay-tpall"));
 
             int count = 0;
             for(PartyMember other : party.getMembers()) {
-                if(other.equals(member) || other.isOnline()) continue;
+                if(other.equals(member) || other.isOffline()) continue;
                 PartyPreTeleportEvent event = new PartyPreTeleportEvent(party, other.getOnlinePlayer(), player, TeleportMode.ALL_TO_LEADER);
                 Bukkit.getPluginManager().callEvent(event);
                 if(!event.isCancelled()) {
@@ -167,9 +167,13 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
                 }
             }
 
-            if(count > 0)
-                return success(sender, i18n("teleport.send-success.tpall").replace("%count", String.valueOf(count)));
-            return error(sender, i18n("teleport.no-members-tpall"));
+            if(count == 0)
+                return error(sender, i18n("teleport.no-members-tpall"));
+
+            // Pay and send message
+            if(cost != null)
+                cost.pay(player);
+            return success(sender, i18n("teleport.send-success-tpall").replace("%count", String.valueOf(count)));
         }
 
         if(args.length < 2)
@@ -211,6 +215,21 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
                     case MEMBER_TO_MEMBER -> error(sender, i18n("teleport.mode-disabled.member-to-member"));
                 };
             }
+            // Cost
+            PlayerCost cost = config.getCost();
+            if(cost != null && !cost.canPay(player))
+                return error(sender, i18n("teleport.cannot-pay"));
+
+            // Event
+            PartyPreTeleportEvent event = new PartyPreTeleportEvent(party, player, target.getOnlinePlayer(), mode);
+            Bukkit.getPluginManager().callEvent(event);
+            if(event.isCancelled()) {
+                return true;
+            }
+
+            // Pay
+            if(cost != null)
+                cost.pay(player);
 
             // Send request
             member.sendTeleportRequest(other, mode);

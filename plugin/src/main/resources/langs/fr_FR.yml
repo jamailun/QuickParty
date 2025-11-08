@@ -44,6 +44,8 @@ players:
   kick-info: "Tu as été expulsé du groupe."
   unknown: "Argument inconnu. Arguments attendus: %args."
   teleport:
+    cannot-pay-tpall: "Vous n'avez pas les resources nécessaires afin d'effectuer une téléportation de groupe."
+    cannot-pay: "Vous n'avez pas les resources nécessaires pour une téléportation."
     mode-disabled:
       all-to-leader: "La fonction de téléportation de groupe a été désactivée."
       leader-to-member: "La fonction de téléportation de groupe a été désactivée."

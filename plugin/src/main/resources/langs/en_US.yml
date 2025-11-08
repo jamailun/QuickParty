@@ -44,6 +44,8 @@ players:
   kick-info: "You have been kicked from the party."
   unknown: "Unexpected argument. Expected one of %args."
   teleport:
+    cannot-pay-tpall: "You don't have the required resource to do a group-teleportation."
+    cannot-pay: "You don't have the required resource to teleport."
     mode-disabled:
       all-to-leader: "Group-teleportation feature has been disabled."
       leader-to-member: "Group-teleportation feature has been disabled."
