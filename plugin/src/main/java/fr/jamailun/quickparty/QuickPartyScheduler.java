@@ -22,6 +22,17 @@ public final class QuickPartyScheduler {
      * @param runnable runnable.
      * @param duration duration.
      */
+    public static void runLater(@NotNull Runnable runnable, @NotNull Duration duration) {
+        long millis = duration.toMillis();
+        long ticks = millis / 50;
+        Bukkit.getScheduler().runTaskLater(plugin, runnable, ticks);
+    }
+
+    /**
+     * Run task later, async.
+     * @param runnable runnable.
+     * @param duration duration.
+     */
     public static void runLaterAsync(@NotNull Runnable runnable, @NotNull Duration duration) {
         long millis = duration.toMillis();
         long ticks = millis / 50;

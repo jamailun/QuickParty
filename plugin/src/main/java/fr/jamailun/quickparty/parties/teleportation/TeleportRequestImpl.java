@@ -1,6 +1,7 @@
 package fr.jamailun.quickparty.parties.teleportation;
 
 import com.google.common.base.Preconditions;
+import fr.jamailun.quickparty.QuickPartyScheduler;
 import fr.jamailun.quickparty.api.parties.Party;
 import fr.jamailun.quickparty.api.parties.PartyMember;
 import fr.jamailun.quickparty.api.parties.teleportation.TeleportMode;
@@ -9,9 +10,15 @@ import fr.jamailun.quickparty.api.parties.teleportation.TeleportState;
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import lombok.Getter;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 /**
@@ -22,11 +29,13 @@ public class TeleportRequestImpl implements TeleportRequest {
 
     private static final String ERROR = "&c";
     private static final String SUCCESS = "&a";
+    private static final DecimalFormat FORMAT = new DecimalFormat("#.#");
 
     private final PartyMember awaited;
     private final PartyMember waiting;
     private final TeleportMode mode;
     private final Consumer<TeleportRequest> removeCallback;
+    private final String delay;
 
     private final LocalDateTime date;
     private final LocalDateTime expirationDate;
@@ -48,6 +57,8 @@ public class TeleportRequestImpl implements TeleportRequest {
         // Dates
         date = LocalDateTime.now();
         expirationDate = date.plus(QuickPartyConfig.getInstance().getTeleportRequestExpiration());
+        Double rawDelay = QuickPartyConfig.getInstance().getTeleportRules(mode).teleportWaitSecs();
+        delay = rawDelay == null ? "0" : FORMAT.format(rawDelay);
     }
 
     @Override
@@ -99,8 +110,34 @@ public class TeleportRequestImpl implements TeleportRequest {
         }
 
         state = TeleportState.ACCEPTED_SUCCESS;
-        //TODO teleport cooldown and stuff
 
+        // Si on a un délai, on envoie un message de confirmation avant de vraiment téléporter.
+        double toWait = Objects.requireNonNullElse(QuickPartyConfig.getInstance().getTeleportRules(mode).teleportWaitSecs(), 0d);
+        if(toWait > 0) {
+            if(isTpAll()) {
+                waitingI18n("players.teleport.accepted-tpall", SUCCESS);
+                awaitedI18n("players.teleport.accepted", SUCCESS);
+            } else {
+                waitingI18n("players.teleport.accepted", SUCCESS);
+                awaitedI18n("players.teleport.accepted-other", SUCCESS);
+            }
+            playSound(getPlayerToTeleport(), Sound.BLOCK_NOTE_BLOCK_BIT);
+            playSound(getDestination(), Sound.BLOCK_NOTE_BLOCK_BIT);
+
+            int ticks = (int) (toWait * 1000 / 50);
+            Player player = getPlayerToTeleport().getOnlinePlayer();
+            player.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, ticks, 10));
+            QuickPartyScheduler.runLater(this::actuallyTeleport, Duration.ofMillis((long)(toWait * 1000)));
+        }
+        // Sinon, on téléporte directement.
+        else {
+            actuallyTeleport();
+        }
+
+        removeCallback.accept(this);
+    }
+
+    private void actuallyTeleport() {
         // Teleport + effects
         getPlayerToTeleport().getOnlinePlayer().teleport(getDestination().getOnlinePlayer());
         playSound(getPlayerToTeleport(), Sound.ENTITY_PLAYER_TELEPORT);
@@ -114,8 +151,6 @@ public class TeleportRequestImpl implements TeleportRequest {
             awaitedI18n("players.teleport.success-other", SUCCESS);
             waitingI18n("players.teleport.success", SUCCESS);
         }
-
-        removeCallback.accept(this);
     }
 
     @Override
@@ -143,12 +178,12 @@ public class TeleportRequestImpl implements TeleportRequest {
 
     private void waitingI18n(@NotNull String key, @NotNull String color) {
         String i18n = QuickPartyConfig.getI18n(key);
-        String msg = color + i18n.replace("%player", awaited.getName()).replace("&r", color);
+        String msg = color + i18n.replace("%player", awaited.getName()).replace("&r", color).replace("%delay", delay);
         waiting.sendMessage(msg);
     }
     private void awaitedI18n(@NotNull String key, @NotNull String color) {
         String i18n = QuickPartyConfig.getI18n(key);
-        String msg = color + i18n.replace("%player", waiting.getName()).replace("&r", color);
+        String msg = color + i18n.replace("%player", waiting.getName()).replace("&r", color).replace("%delay", delay);
         awaited.sendMessage(msg);
     }
     private void playSound(@NotNull PartyMember member, @NotNull Sound sound) {
