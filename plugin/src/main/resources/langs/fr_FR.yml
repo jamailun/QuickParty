@@ -69,15 +69,15 @@ players:
     expired-tpall: "La proposition de téléportation de groupe de &e%player&r a expirée."
     messages:
       tpall:
-        - "&e---------------------------------------"
-        - "&eLe chef &6%player&e vous a envoyé une&a téléportation de groupe&e sur sa position."
+        - "&b---------------------------------------"
+        - "&bLe chef &6%player&b vous a envoyé une&b téléportation de groupe&b sur sa position."
         - "&7Faites &a%CMD_ACCEPT&7 ou &c%CMD_REFUSE&7."
-        - "&e---------------------------------------"
+        - "&b---------------------------------------"
       tp:
-        - "&e---------------------------------------"
-        - "&eLe membre d'équipe &l%player&e vous a envoyé une&a demande de téléportation&e sur&l votre&e position."
+        - "&a---------------------------------------"
+        - "&aLe membre d'équipe &l%player&a vous a envoyé une&e demande de téléportation&a sur&l votre&a position."
         - "&7Faites &a%CMD_ACCEPT&7 ou &c%CMD_REFUSE&7."
-        - "&e---------------------------------------"
+        - "&a---------------------------------------"
 
 
 admin:

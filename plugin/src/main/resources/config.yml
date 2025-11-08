@@ -42,7 +42,7 @@ teleportation:
       enabled: true
       permission: none
       costItem:
-        item: emerald
+        type: emerald
         count: 10
       teleportWaitSecs: 10.0
     # Allow the leader to TP to a member.

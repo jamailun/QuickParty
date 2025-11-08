@@ -69,15 +69,15 @@ players:
     expired-tpall: "&6%player&r group teleportation offer expired."
     messages:
       tpall:
-        - "&e---------------------------------------"
-        - "&eLeader &6%player&e sent you a&a group-teleportation&e to his location."
+        - "&b---------------------------------------"
+        - "&bLeader &6%player&b sent you a&a group-teleportation&b to his location."
         - "&7You can do &a%CMD_ACCEPT&7 or &c%CMD_REFUSE&7."
-        - "&e---------------------------------------"
+        - "&b---------------------------------------"
       tp:
-        - "&e---------------------------------------"
-        - "&eParty member &l%player&e sent you a&a teleportation request&e to&l your&r location."
+        - "&a---------------------------------------"
+        - "&aParty member &l%player&a sent you a&e teleportation request&a to&l your&r location."
         - "&7You can do &a%CMD_ACCEPT&7 or &c%CMD_REFUSE&7."
-        - "&e---------------------------------------"
+        - "&a---------------------------------------"
 
 
 admin:
