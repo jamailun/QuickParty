@@ -59,11 +59,14 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
         }
 
         if("accept".equalsIgnoreCase(args[0])) {
-            // Teleport ?
-            TeleportRequest request = QuickParty.getPartiesManager().getTeleportRequestFor(player);
-            if(request != null) {
-                request.accept();
-                return true;
+            // Teleport request ?
+            if(args.length > 1 && QuickParty.getPlayerParty(player) != null) {
+                String otherName = args[1];
+                TeleportRequest request = QuickParty.getPartiesManager().getTeleportRequestFor(player, otherName);
+                if(request != null) {
+                    request.accept();
+                    return true;
+                }
             }
 
             // Invitation
@@ -76,10 +79,13 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
         if("refuse".equalsIgnoreCase(args[0])) {
             // Teleport ?
-            TeleportRequest request = QuickParty.getPartiesManager().getTeleportRequestFor(player);
-            if(request != null) {
-                request.cancel();
-                return true;
+            if(args.length > 1 && QuickParty.getPlayerParty(player) != null) {
+                String otherName = args[1];
+                TeleportRequest request = QuickParty.getPartiesManager().getTeleportRequestFor(player, otherName);
+                if(request != null) {
+                    request.cancel();
+                    return true;
+                }
             }
 
             // Invitation
@@ -283,7 +289,7 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
 
     private @NotNull @Unmodifiable List<String> getFirstArgs(@NotNull Player player) {
         // Add 'refuse' and 'accept' if an invitation/tp-request exists.
-        boolean hasTpRequest = QuickParty.getPartiesManager().hasTeleportRequest(player);
+        boolean hasTpRequest = QuickParty.getPartiesManager().hasTeleportRequestToAccept(player);
         boolean hasInvitation = QuickParty.getPartiesManager().hasInvitation(player);
         String[] bonusInvited = (hasTpRequest || hasInvitation) ? ARGS_INVITED : new String[0];
 

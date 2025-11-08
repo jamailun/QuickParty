@@ -34,13 +34,6 @@ public interface Party {
     Collection<PartyInvitation> getPendingInvitations();
 
     /**
-     * Get all pending teleport requests.
-     * @return a non-null view of {@link TeleportRequest TeleportRequests}.
-     */
-    @NotNull @UnmodifiableView
-    Collection<TeleportRequest> getPendingTeleportRequests();
-
-    /**
      * Get the <b>total</b> pending size.
      * @return the sum of the players and invitations counts.
      */
@@ -49,18 +42,25 @@ public interface Party {
     }
 
     /**
-     * Get a party-member.
+     * Get a party-member by {@link UUID}.
      * @param uuid the UUID of the player to get.
      * @return {@code null} if the UUID does not match any member.
      */
     @Nullable PartyMember getPartyMember(@NotNull UUID uuid);
 
     /**
-     * Get a party-member
+     * Get a party-member by Bukkit reference.
      * @param player player to get.
      * @return {@code null} if the player is not in the party.
      */
     @Nullable PartyMember getPartyMember(@NotNull OfflinePlayer player);
+
+    /**
+     * Get a party-member by name.
+     * @param username player's username to get.
+     * @return {@code null} if the player is not in the party.
+     */
+    @Nullable PartyMember getPartyMember(@NotNull String username);
 
     /**
      * Get the party leader.
@@ -97,10 +97,11 @@ public interface Party {
 
     /**
      * Get a player pending {@link TeleportRequest}.
-     * @param player player to get the request of.
+     * @param playerToAccept player that need to accept the teleport request.
+     * @param playerWaiting player waiting for the request to be accepted.
      * @return {@code null} if no request is pending for this player.
      */
-    @Nullable TeleportRequest getTeleportRequestOf(@NotNull OfflinePlayer player);
+    @Nullable TeleportRequest getTeleportRequestFor(@NotNull PartyMember playerToAccept, @NotNull PartyMember playerWaiting);
 
     /**
      * Cancel a pending invitation.

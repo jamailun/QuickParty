@@ -60,11 +60,8 @@ public interface PartiesManager {
      * Test if a pending {@link TeleportRequest} exists for a {@link Player}.
      * @param player the player to test.
      * @return {@code true} if this player has a pending {@link TeleportRequest}.
-     * @see #getTeleportRequestFor(OfflinePlayer)
      */
-    default boolean hasTeleportRequest(@NotNull OfflinePlayer player) {
-        return getTeleportRequestFor(player) != null;
-    }
+    boolean hasTeleportRequestToAccept(@NotNull Player player);
 
     /**
      * Get the {@link PartyInvitation} of a {@link Player}.
@@ -75,9 +72,9 @@ public interface PartiesManager {
 
     /**
      * Get the {@link TeleportRequest} of a {@link Player}.
-     * @param player the player to test.
+     * @param playerToAccept the player to accept the invitation.
      * @return {@code null} if this player has no pending {@link TeleportRequest}.
      */
-    @Nullable TeleportRequest getTeleportRequestFor(@NotNull OfflinePlayer player);
+    @Nullable TeleportRequest getTeleportRequestFor(@NotNull Player playerToAccept, @NotNull String otherPlayer);
 
 }

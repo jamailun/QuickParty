@@ -141,20 +141,18 @@ public class QuickPartyConfig {
     }
 
     public void sendInvitationMessageTo(@NotNull Player inviter, @NotNull CommandSender target) {
-        sendComplexMessage(target, messageInvitation, l -> l.replace("%player", inviter.getName()));
+        sendComplexMessage(target, messageInvitation, "", l -> l.replace("%player", inviter.getName()));
     }
 
     /**
      * Send a TP request.
-     * @param player player to teleport.
-     * @param destination player to teleport to.
+     * @param waiting player waiting for the other to accept/refuse the TP request.
+     * @param awaited player that need to accept to.
      * @param mode teleport mode.
      */
-    public void sendTpRequest(@NotNull Player player, @NotNull Player destination, @NotNull TeleportMode mode) {
+    public void sendTpRequest(@NotNull Player waiting, @NotNull Player awaited, @NotNull TeleportMode mode) {
         var message = (mode == TeleportMode.ALL_TO_LEADER) ? messageTpAll : messageTp;
-        CommandSender msgTarget = (mode == TeleportMode.ALL_TO_LEADER) ? player : destination;
-        String otherPlayer = ((mode == TeleportMode.ALL_TO_LEADER) ? destination : player).getName();
-        sendComplexMessage(msgTarget, message, l -> l.replace("%player", otherPlayer));
+        sendComplexMessage(awaited, message, " " + waiting.getName(), l -> l.replace("%player", waiting.getName()));
     }
 
     private void extractLangFiles(@NotNull File outDir) {
@@ -203,28 +201,28 @@ public class QuickPartyConfig {
         return Duration.ofMillis((long) (seconds * 1000));
     }
 
-    private static void sendComplexMessage(@NotNull CommandSender target, @NotNull List<String> message, Function<String, String> messageTransformation) {
+    private static void sendComplexMessage(@NotNull CommandSender target, @NotNull List<String> message, @NotNull String arg, @NotNull Function<String, String> messageTransformation) {
         for(String line : message) {
             // Replace
             String replaced =  messageTransformation.apply(line);
 
             // Transform
-            BaseComponent[] components = prepareComplexMessage(replaced);
+            BaseComponent[] components = prepareComplexMessage(replaced, arg);
             target.spigot().sendMessage(components);
         }
     }
 
-    private static @NotNull BaseComponent @NotNull [] prepareComplexMessage(@NotNull String raw) {
+    private static @NotNull BaseComponent @NotNull [] prepareComplexMessage(@NotNull String raw, @NotNull String arg) {
         List<String> parts = StringUtils.splitWithDelimiters(raw, "%CMD_ACCEPT", "%CMD_REFUSE");
         List<BaseComponent> components = new ArrayList<>();
         for(String part : parts) {
             TextComponent text;
             if("%CMD_ACCEPT".equals(part)) {
                 text = new TextComponent("§a/p accept");
-                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept"));
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept" + arg));
             } else if("%CMD_REFUSE".equals(part)) {
                 text = new TextComponent("§c/p refuse");
-                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse"));
+                text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse" + arg));
             } else {
                 text = new TextComponent(StringUtils.parseString(part));
             }

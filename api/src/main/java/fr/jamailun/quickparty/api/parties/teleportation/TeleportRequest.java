@@ -42,16 +42,40 @@ public interface TeleportRequest {
     @NotNull LocalDateTime getExpirationDate();
 
     /**
-     * Player to teleport to.
-     * @return the player. If offline, the request will be cancelled.
+     * Get the name of the player destination.
+     * @return the destination username
      */
-    @NotNull PartyMember getDestination();
+    default @NotNull String getInvitationName() {
+        return getDestination().getName();
+    }
 
     /**
-     * Player to teleport. <b>Not always the requester ! ({@link TeleportMode#ALL_TO_LEADER})</b>
-     * @return the player to be teleported. If offline, the request will be cancelled.
+     * Player that need to accept the invitation.
+     * @return a non-null member.
      */
-    @NotNull PartyMember getPlayer();
+    @NotNull PartyMember getPlayerToAccept();
+
+    /**
+     * Player that waits for the other one for the teleportation.
+     * @return a non-null member.
+     */
+    @NotNull PartyMember getPlayerWaiting();
+
+    /**
+     * Player to teleport to. Varies according to the value of {@link #getMode()}.
+     * @return a non-null member.
+     */
+    default @NotNull PartyMember getDestination() {
+        return getMode() == TeleportMode.ALL_TO_LEADER ? getPlayerWaiting() : getPlayerToAccept();
+    }
+
+    /**
+     * Player to be teleported. Varies according to the value of {@link #getMode()}.
+     * @return a non-null member.
+     */
+    default @NotNull PartyMember getPlayerToTeleport() {
+        return getMode() == TeleportMode.ALL_TO_LEADER ? getPlayerToAccept() : getPlayerWaiting();
+    }
 
     /**
      * Cancel the request.

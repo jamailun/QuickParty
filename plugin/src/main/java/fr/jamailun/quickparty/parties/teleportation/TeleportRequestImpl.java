@@ -12,6 +12,7 @@ import org.bukkit.Sound;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.function.Consumer;
 
 /**
  * Implementation for a party TP request.
@@ -22,19 +23,28 @@ public class TeleportRequestImpl implements TeleportRequest {
     private static final String ERROR = "&c";
     private static final String SUCCESS = "&a";
 
-    private final PartyMember player;
-    private final PartyMember destination;
+    private final PartyMember awaited;
+    private final PartyMember waiting;
     private final TeleportMode mode;
+    private final Consumer<TeleportRequest> removeCallback;
 
     private final LocalDateTime date;
     private final LocalDateTime expirationDate;
 
     private TeleportState state = TeleportState.PENDING;
 
-    public TeleportRequestImpl(@NotNull PartyMember player, @NotNull PartyMember destination, @NotNull TeleportMode mode) {
-        this.player = player;
-        this.destination = destination;
+    /**
+     * New instance.
+     * @param awaited player that need to accept the request.
+     * @param waiting player waiting for the other one to accept the request.
+     * @param mode teleport mode.
+     * @param removeCallback callback to call whe removal is required.
+     */
+    public TeleportRequestImpl(@NotNull PartyMember awaited, @NotNull PartyMember waiting, @NotNull TeleportMode mode, @NotNull Consumer<TeleportRequest> removeCallback) {
+        this.awaited = awaited;
+        this.waiting = waiting;
         this.mode = mode;
+        this.removeCallback = removeCallback;
         // Dates
         date = LocalDateTime.now();
         expirationDate = date.plus(QuickPartyConfig.getInstance().getTeleportRequestExpiration());
@@ -42,7 +52,17 @@ public class TeleportRequestImpl implements TeleportRequest {
 
     @Override
     public @NotNull Party getParty() {
-        return player.getParty();
+        return getPlayerToAccept().getParty();
+    }
+
+    @Override
+    public @NotNull PartyMember getPlayerToAccept() {
+        return awaited;
+    }
+
+    @Override
+    public @NotNull PartyMember getPlayerWaiting() {
+        return waiting;
     }
 
     /**
@@ -52,29 +72,19 @@ public class TeleportRequestImpl implements TeleportRequest {
         if(!isPending()) return;
         state = TeleportState.EXPIRED;
 
+        // Action
         if(isTpAll()) {
-            playerI18n("players.teleport.expired-group", ERROR);
-            destinationI18n("players.teleport.expired-tpall", ERROR);
-            playSound(player, Sound.ENTITY_ALLAY_DEATH);
-            playSound(destination, Sound.BLOCK_CHORUS_FLOWER_DEATH);
+            waitingI18n("players.teleport.expired-group", ERROR);
+            awaitedI18n("players.teleport.expired-tpall", ERROR);
         } else {
-            playerI18n("players.teleport.expired", ERROR);
-            playSound(player, Sound.ENTITY_ALLAY_DEATH);
+            waitingI18n("players.teleport.expired", ERROR);
+            awaitedI18n("players.teleport.expired-other", ERROR);
         }
-    }
+        playSound(waiting, Sound.ENTITY_ALLAY_DEATH);
+        playSound(awaited, Sound.BLOCK_CHORUS_FLOWER_DEATH);
 
-    public void abandon() {
-        if(!isPending()) return;
-        state = TeleportState.ABANDONED;
-
-        if(isTpAll()) {
-            playerI18n("players.teleport.cancelled-group", ERROR);
-            destinationI18n("players.teleport.abandoned-tpall", ERROR);
-            playSound(player, Sound.ENTITY_ALLAY_DEATH);
-        } else {
-            playerI18n("players.teleport.abandoned", ERROR);
-            playSound(destination, Sound.BLOCK_CHORUS_FLOWER_DEATH);
-        }
+        // Remove
+        removeCallback.accept(this);
     }
 
     @Override
@@ -83,23 +93,29 @@ public class TeleportRequestImpl implements TeleportRequest {
 
         if(!canTeleport()) {
             state = TeleportState.ACCEPTED_ERROR;
-            playerI18n("players.teleport.impossible", ERROR);
-            playSound(player, Sound.ENTITY_VILLAGER_NO);
+            waitingI18n("players.teleport.impossible", ERROR);
+            playSound(getPlayerToTeleport(), Sound.ENTITY_VILLAGER_NO);
             return;
         }
 
         state = TeleportState.ACCEPTED_SUCCESS;
         //TODO teleport cooldown and stuff
 
-        player.getOnlinePlayer().teleport(destination.getOnlinePlayer());
-        playSound(player, Sound.ENTITY_PLAYER_TELEPORT);
-        playSound(destination, Sound.BLOCK_NOTE_BLOCK_CHIME);
-        playerI18n("players.teleport.success", SUCCESS);
+        // Teleport + effects
+        getPlayerToTeleport().getOnlinePlayer().teleport(getDestination().getOnlinePlayer());
+        playSound(getPlayerToTeleport(), Sound.ENTITY_PLAYER_TELEPORT);
+        playSound(getDestination(), Sound.BLOCK_NOTE_BLOCK_CHIME);
+
+        // Messages
         if(isTpAll()) {
-            destinationI18n("players.teleport.success-tpall", SUCCESS);
+            awaitedI18n("players.teleport.success", SUCCESS);
+            waitingI18n("players.teleport.success-tpall", SUCCESS);
         } else {
-            destinationI18n("players.teleport.success-other", SUCCESS);
+            awaitedI18n("players.teleport.success-other", SUCCESS);
+            waitingI18n("players.teleport.success", SUCCESS);
         }
+
+        removeCallback.accept(this);
     }
 
     @Override
@@ -107,28 +123,33 @@ public class TeleportRequestImpl implements TeleportRequest {
         Preconditions.checkState(isPending(), "Cannot cancel if state not PENDING. Current state = " + state + ".");
         state = TeleportState.EXPIRED;
 
-        player.sendMessage(QuickPartyConfig.getI18n("players.teleport.cancelled"));
-        destination.sendMessage(QuickPartyConfig.getI18n("players.teleport.other-cancelled").replace("%player", player.getName()));
+        if(isTpAll()) {
+            waitingI18n("players.teleport.cancelled-tpall", ERROR);
+            awaitedI18n("players.teleport.cancelled-group", ERROR);
+        } else {
+            waitingI18n("players.teleport.cancelled", ERROR);
+            awaitedI18n("players.teleport.cancelled-other", ERROR);
+        }
     }
 
     private boolean canTeleport() {
-        return destination.isOnline() && destination.getOnlinePlayer().isValid()
-                && player.isOnline() && player.getOnlinePlayer().isValid();
+        return getDestination().isOnline() && getDestination().getOnlinePlayer().isValid()
+                && getPlayerToTeleport().isOnline() && getPlayerToTeleport().getOnlinePlayer().isValid();
     }
 
     private boolean isTpAll() {
         return mode == TeleportMode.ALL_TO_LEADER;
     }
 
-    private void playerI18n(@NotNull String key, @NotNull String color) {
+    private void waitingI18n(@NotNull String key, @NotNull String color) {
         String i18n = QuickPartyConfig.getI18n(key);
-        String msg = color + i18n.replace("%player", destination.getName()).replace("&r", color);
-        player.sendMessage(msg);
+        String msg = color + i18n.replace("%player", awaited.getName()).replace("&r", color);
+        waiting.sendMessage(msg);
     }
-    private void destinationI18n(@NotNull String key, @NotNull String color) {
+    private void awaitedI18n(@NotNull String key, @NotNull String color) {
         String i18n = QuickPartyConfig.getI18n(key);
-        String msg = color + i18n.replace("%player", player.getName()).replace("&r", color);
-        destination.sendMessage(msg);
+        String msg = color + i18n.replace("%player", waiting.getName()).replace("&r", color);
+        awaited.sendMessage(msg);
     }
     private void playSound(@NotNull PartyMember member, @NotNull Sound sound) {
         member.playSound(sound, 1.2f);

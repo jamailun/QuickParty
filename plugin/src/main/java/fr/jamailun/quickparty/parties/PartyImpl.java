@@ -1,6 +1,7 @@
 package fr.jamailun.quickparty.parties;
 
 import com.google.common.base.Preconditions;
+import fr.jamailun.quickparty.QuickPartyLogger;
 import fr.jamailun.quickparty.QuickPartyScheduler;
 import fr.jamailun.quickparty.api.QuickParty;
 import fr.jamailun.quickparty.api.events.PartyDisbandEvent;
@@ -26,6 +27,7 @@ import org.jetbrains.annotations.UnmodifiableView;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PartyImpl implements Party {
 
@@ -34,7 +36,9 @@ public class PartyImpl implements Party {
     @Getter private PartyMemberImpl leader;
 
     private final Map<UUID, PartyInvitation> pendingInvitations = new HashMap<>();
-    private final Map<UUID, TeleportRequestImpl> pendingTpRequests = new HashMap<>();
+
+    // awaited -> {waiting, TP_req}
+    private final Map<UUID, Map<UUID, TeleportRequestImpl>> pendingTpRequests = new ConcurrentHashMap<>();
 
     private final PartiesManagerImpl manager;
 
@@ -59,11 +63,6 @@ public class PartyImpl implements Party {
     }
 
     @Override
-    public @NotNull @UnmodifiableView Collection<TeleportRequest> getPendingTeleportRequests() {
-        return Collections.unmodifiableCollection(pendingTpRequests.values());
-    }
-
-    @Override
     public @Nullable PartyMemberImpl getPartyMember(@NotNull UUID uuid) {
         return members.get(uuid);
     }
@@ -71,6 +70,13 @@ public class PartyImpl implements Party {
     @Override
     public @Nullable PartyMemberImpl getPartyMember(@NotNull OfflinePlayer player) {
         return members.get(player.getUniqueId());
+    }
+
+    @Override
+    public @Nullable PartyMemberImpl getPartyMember(@NotNull String username) {
+        return members.values().stream()
+                .filter(p -> Objects.equals(username, p.getName()))
+                .findFirst().orElse(null);
     }
 
     @Override
@@ -95,27 +101,29 @@ public class PartyImpl implements Party {
         Preconditions.checkArgument(member != null, "Player " + player + " is not in the party " + this + " !");
         Preconditions.checkArgument(target != null, "Destination " + target + " is not in the party " + this + " !");
 
-        // Cancel old request :
-        TeleportRequestImpl previous = pendingTpRequests.remove(player.getUniqueId());
-        if(previous != null && previous.isPending()) {
-            previous.abandon();
-        }
+        PartyMember awaitedMember = mode == TeleportMode.ALL_TO_LEADER ? member : target;
+        PartyMember waitingMember = mode == TeleportMode.ALL_TO_LEADER ? target : member;
+        QuickPartyLogger.debug("Ok. Nouvelle TP_r. Le joueur " + waitingMember.getName() + " attend le joueur " + awaitedMember.getName()+".");
 
         // New request
-        TeleportRequestImpl request = new TeleportRequestImpl(member, target, mode);
-        pendingTpRequests.put(player.getUniqueId(), request);
+        TeleportRequestImpl request = new TeleportRequestImpl(awaitedMember, waitingMember, mode, this::removeTpReq);
+        pendingTpRequests
+                .computeIfAbsent(awaitedMember.getUUID(), k -> new ConcurrentHashMap<>(4))
+                .put(waitingMember.getUUID(), request);
 
         // Change state later
         QuickPartyScheduler.runLaterAsync(request::expired, QuickPartyConfig.getInstance().getTeleportRequestExpiration());
 
         // Message and sound
-        QuickPartyConfig.getInstance().sendTpRequest(player, destination, mode);
+        QuickPartyConfig.getInstance().sendTpRequest(waitingMember.getOnlinePlayer(), awaitedMember.getOnlinePlayer(), mode);
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_COW_BELL, 1f, 1.05f);
     }
 
     @Override
-    public @Nullable TeleportRequest getTeleportRequestOf(@NotNull OfflinePlayer player) {
-        return pendingTpRequests.get(player.getUniqueId());
+    public @Nullable TeleportRequest getTeleportRequestFor(@NotNull PartyMember playerToAccept, @NotNull PartyMember playerWaiting) {
+        var map = pendingTpRequests.get(playerToAccept.getUUID());
+        if(map == null) return null;
+        return map.get(playerWaiting.getUUID());
     }
 
     @Override
@@ -218,5 +226,11 @@ public class PartyImpl implements Party {
 
     private static @NotNull String i18n(@NotNull String key) {
         return QuickPartyConfig.getI18n("players." + key);
+    }
+
+    private void removeTpReq(@NotNull TeleportRequest request) {
+        var map = pendingTpRequests.get(request.getPlayerToAccept().getUUID());
+        if(map == null) return;
+        map.remove(request.getPlayerWaiting().getUUID());
     }
 }

@@ -81,15 +81,30 @@ public class PartiesManagerImpl implements PartiesManager {
     }
 
     @Override
+    public boolean hasTeleportRequestToAccept(@NotNull Player player) {
+        return false;
+    }
+
+    @Override
     public PartyInvitation getInvitationFor(@NotNull OfflinePlayer player) {
         return invitations.get(player.getUniqueId());
     }
 
     @Override
-    public TeleportRequest getTeleportRequestFor(@NotNull OfflinePlayer player) {
-        Party party = getPlayerParty(player);
-        if(party == null) return null;
-        return party.getTeleportRequestOf(player);
+    public @Nullable TeleportRequest getTeleportRequestFor(@NotNull Player toTeleport, @NotNull String otherName) {
+        Party party = getPlayerParty(toTeleport);
+        if(party == null) {
+            QuickPartyLogger.warn("Player " + toTeleport.getName() + " is not in a party. Cannot fetch his TP requests.");
+            return null;
+        }
+        PartyMember member = Objects.requireNonNull(party.getPartyMember(toTeleport));
+        PartyMember other = party.getPartyMember(otherName);
+        if(other == null) {
+            QuickPartyLogger.warn("Other player §c" + otherName + "§e is not in party of player §b" + toTeleport);
+            return null;
+        }
+
+        return party.getTeleportRequestFor(member, other);
     }
 
     void playerQuit(@NotNull UUID uuid) {

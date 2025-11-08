@@ -2,8 +2,7 @@ package fr.jamailun.quickparty;
 
 import fr.jamailun.quickparty.configuration.QuickPartyConfig;
 import fr.jamailun.quickparty.utils.StringUtils;
-import org.bukkit.command.CommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
@@ -13,8 +12,6 @@ public final class QuickPartyLogger {
 
     private final static DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("[HH:mm:ss]");
 
-    private static CommandSender sender;
-
     private QuickPartyLogger() {}
 
     private static @NotNull String time() {
@@ -23,10 +20,6 @@ public final class QuickPartyLogger {
 
     private static @NotNull String prefix(@NotNull String color) {
         return "&b[QPa]" + color + time() + " ";
-    }
-
-    static void initialize(@NotNull JavaPlugin plugin) {
-        QuickPartyLogger.sender = plugin.getServer().getConsoleSender();
     }
 
     public static void debug(@NotNull String message) {
@@ -52,7 +45,8 @@ public final class QuickPartyLogger {
     }
 
     private static void send(@NotNull String message) {
-        sender.sendMessage(StringUtils.parseString(message));
+        Bukkit.getServer().getConsoleSender()
+                .sendMessage(StringUtils.parseString(message));
     }
 
 }
