@@ -15,21 +15,50 @@ No need to name the party or anything : just invite another player and *poof*, y
 ## Commands
 
 - `/party invite <player>` : Invite a player in your party. If no party exist, will create one for you.
-- `/party accept|refuse` : Accept or refuse a party invitation.
+- `/party accept|refuse [player]` : Accept or refuse a party invitation.
   - You can only have one valid party request at the same time.
 - `/party info` : Information about your current party.
 - `/party leave` : Leave your current party.
+- `/party tp <player>` : Teleport to another player in the party.
 
 **As the party leader :**
 - `/party disband` : Disband the party, discard all invitations.
 - `/party promote <player>` : make a player the new party leader. Of course, said player must be in the party.
 - `/party kick <player>` : kick a player from the party.
+- `/party tpall` : Send a "group-teleport request" to all of your members.
 
 ## Configuration
 
 For now, only two parameters are configurable :
 - `friendlyFire` : if true members of a party can deal damage to each other.
 - `maxSize` : maximum amount of players in a party. Less than 2 would be a bad choice.
+
+### Teleport configuration
+
+The `teleport` section of the configuration is as following :
+- The global `requestExpirationSecs` value, to set the expiration delay of a teleport request.
+- The configuration for all teleportation modes.
+  - A default value for all modes,
+  - An optional overwrite for every mode.
+
+### Teleportation modes
+
+Four teleportation modes exists :
+- `LEADER_TO_MEMBER` : when the party leaders teleport to a member.
+- `MEMBER_TO_LEADER` : reversed.
+- `MEMBER_TO_MEMBER` : a non-party leaders teleports to another one.
+- `ALL_TO_LEADER` : specific case of the `/p tpall`.
+
+### Mode configuration
+
+This specific configuration is configured with:
+- `enabled` (boolean) : to set if the teleport mode is allowed or not. Null, empty and `none` will disable it.
+- `permission` (string) : optional permission to have for a player to use the mode.
+- `costItem` (section) : the cost to use this teleportation
+  - `type` (string) : Material of the item.
+  - `count` (int) : Item count.
+- `teleportWaitSecs` (double) : the teleport delay before actually teleport. If zero of negative, no delay will be applied.
+- `needConfirmation` (boolean) : if `true`, a confirmation request will be sent to the target player.
 
 ## Placeholders
 
