@@ -152,6 +152,9 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
             TeleportModeSection config = QuickPartyConfig.getInstance().getTeleportRules(TeleportMode.ALL_TO_LEADER);
             if(config.disabled())
                 return error(sender, i18n("teleport.mode-disabled.all-to-leader"));
+            if(!config.hasPermission(player))
+                return error(sender, i18n("teleport.no-permission").replace("%permission", config.permission()));
+
             PlayerCost cost = config.getCost();
             if(cost != null && !cost.canPay(player))
                 return error(sender, i18n("teleport.cannot-pay-tpall"));
@@ -215,6 +218,8 @@ public class PartyCommand extends CommandHelper implements CommandExecutor, TabC
                     case MEMBER_TO_MEMBER -> error(sender, i18n("teleport.mode-disabled.member-to-member"));
                 };
             }
+            if(!config.hasPermission(player))
+                return error(sender, i18n("teleport.no-permission").replace("%permission", config.permission()));
             // Cost
             PlayerCost cost = config.getCost();
             if(cost != null && !cost.canPay(player))

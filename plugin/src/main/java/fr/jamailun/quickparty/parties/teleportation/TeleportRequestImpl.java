@@ -57,8 +57,18 @@ public class TeleportRequestImpl implements TeleportRequest {
         // Dates
         date = LocalDateTime.now();
         expirationDate = date.plus(QuickPartyConfig.getInstance().getTeleportRequestExpiration());
-        Double rawDelay = QuickPartyConfig.getInstance().getTeleportRules(mode).teleportWaitSecs();
+
+        var rules = QuickPartyConfig.getInstance().getTeleportRules(mode);
+        Double rawDelay = rules.teleportWaitSecs();
         delay = rawDelay == null ? "0" : FORMAT.format(rawDelay);
+        if( ! rules.doesNeedConfirmation()) {
+            instantTeleport();
+        }
+    }
+
+    private void instantTeleport() {
+        actuallyTeleport();
+        QuickPartyScheduler.runLater(() -> removeCallback.accept(this), Duration.ofMillis(100));
     }
 
     @Override

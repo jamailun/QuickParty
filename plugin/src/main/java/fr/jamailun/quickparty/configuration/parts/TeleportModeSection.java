@@ -2,6 +2,7 @@ package fr.jamailun.quickparty.configuration.parts;
 
 import fr.jamailun.quickparty.api.cost.PlayerCost;
 import fr.jamailun.quickparty.costs.PlayerCostItem;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +28,10 @@ public record TeleportModeSection(
         return new TeleportModeSection(false, "none", false, 1d, null);
     }
 
+    public boolean doesNeedConfirmation() {
+        return Objects.requireNonNullElse(needConfirmation, true);
+    }
+
     public @NotNull TeleportModeSection withDefaults(@NotNull TeleportModeSection dv) {
         return new TeleportModeSection(
                 enabled,
@@ -40,5 +45,17 @@ public record TeleportModeSection(
     public @Nullable PlayerCost getCost() {
         //TODO add other costs later.
         return costItem;
+    }
+
+    /**
+     * Test if a command-sender has the proper permission.
+     * @param sender cmd-sender to test.
+     * @return true when can do tp.
+     */
+    public boolean hasPermission(@NotNull CommandSender sender) {
+        return permission == null
+                || permission.isBlank()
+                || "none".equals(permission)
+                || sender.hasPermission(permission);
     }
 }

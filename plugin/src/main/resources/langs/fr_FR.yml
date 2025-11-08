@@ -46,6 +46,7 @@ players:
   teleport:
     cannot-pay-tpall: "Vous n'avez pas les resources nécessaires afin d'effectuer une téléportation de groupe."
     cannot-pay: "Vous n'avez pas les resources nécessaires pour une téléportation."
+    no-permission: "Vous n'avez pas la permission requise: '&4%permission&r'."
     mode-disabled:
       all-to-leader: "La fonction de téléportation de groupe a été désactivée."
       leader-to-member: "La fonction de téléportation de groupe a été désactivée."
