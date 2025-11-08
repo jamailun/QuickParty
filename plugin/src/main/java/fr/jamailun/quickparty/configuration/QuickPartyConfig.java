@@ -218,10 +218,10 @@ public class QuickPartyConfig {
         for(String part : parts) {
             TextComponent text;
             if("%CMD_ACCEPT".equals(part)) {
-                text = new TextComponent("§a/p accept");
+                text = new TextComponent("§a/p accept§3" + arg);
                 text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p accept" + arg));
             } else if("%CMD_REFUSE".equals(part)) {
-                text = new TextComponent("§c/p refuse");
+                text = new TextComponent("§c/p refuse§3" + arg);
                 text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/p refuse" + arg));
             } else {
                 text = new TextComponent(StringUtils.parseString(part));
